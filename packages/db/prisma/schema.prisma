@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ExerciseType {
+  translation_es_en
+  translation_en_es
+  fill_blank
+  correct_sentence
+  free_writing
+  paragraph_translation
+}
+
+enum CefrLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+enum ExerciseSource {
+  seeded
+  ai_generated
+}
+
+enum ErrorType {
+  grammar
+  third_person_singular
+  verb_tense
+  word_order
+  preposition
+  article
+  pronoun
+  possessive
+  vocabulary
+  expression
+  meaning
+  spelling
+  naturalness
+}
+
+enum LLMRequestType {
+  evaluation
+  generation
+  explanation
+  conversation
+}
+
+enum ConversationRole {
+  user
+  assistant
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  attempts         ExerciseAttempt[]
+  conceptProgress  UserConceptProgress[]
+  learningSessions LearningSession[]
+  conversations    Conversation[]
+}
+
+/// Grammar/vocabulary concept, optionally nested under a parent
+/// (e.g. "third_person_singular" under "present_simple").
+model Concept {
+  id       String   @id @default(cuid())
+  key      String   @unique
+  name     String
+  grammarTopic String
+  parentId String?
+  parent   Concept? @relation("ConceptHierarchy", fields: [parentId], references: [id])
+  children Concept[] @relation("ConceptHierarchy")
+
+  exerciseConcepts ExerciseConcept[]
+  userProgress     UserConceptProgress[]
+
+  @@index([grammarTopic])
+}
+
+model Exercise {
+  id             String         @id @default(cuid())
+  type           ExerciseType
+  level          CefrLevel
+  difficulty     Int
+  grammarTopic   String
+  spanishText    String?
+  expectedAnswer String?
+  prompt         String?
+  contextHint    String?
+  source         ExerciseSource @default(seeded)
+  createdAt      DateTime       @default(now())
+
+  concepts ExerciseConcept[]
+  attempts ExerciseAttempt[]
+
+  @@index([grammarTopic, level, difficulty])
+}
+
+model ExerciseConcept {
+  exerciseId String
+  conceptId  String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  concept    Concept  @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  @@id([exerciseId, conceptId])
+  @@index([conceptId])
+}
+
+model ExerciseAttempt {
+  id           String   @id @default(cuid())
+  userId       String
+  exerciseId   String
+  rawAnswer    String
+  overallScore Float
+  createdAt    DateTime @default(now())
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise  Exercise         @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sentences SentenceResult[]
+
+  @@index([userId, createdAt])
+  @@index([exerciseId])
+}
+
+model SentenceResult {
+  id             String  @id @default(cuid())
+  attemptId      String
+  sentenceIndex  Int
+  text           String
+  correct        Boolean
+  score          Float
+
+  attempt ExerciseAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  errors  Error[]
+
+  @@index([attemptId])
+}
+
+model Error {
+  id               String    @id @default(cuid())
+  sentenceResultId String
+  type             ErrorType
+  category         String
+  explanation      String
+  correctedText    String?
+
+  sentenceResult SentenceResult @relation(fields: [sentenceResultId], references: [id], onDelete: Cascade)
+
+  @@index([sentenceResultId])
+  @@index([type, category])
+}
+
+model UserConceptProgress {
+  id             String    @id @default(cuid())
+  userId         String
+  conceptId      String
+  attempts       Int       @default(0)
+  correct        Int       @default(0)
+  lastPracticedAt DateTime?
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  concept Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, conceptId])
+  @@index([userId])
+}
+
+model LearningSession {
+  id                 String    @id @default(cuid())
+  userId             String
+  startedAt          DateTime  @default(now())
+  endedAt            DateTime?
+  exercisesCompleted Int       @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  startedAt DateTime @default(now())
+
+  user     User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages ConversationMessage[]
+
+  @@index([userId, startedAt])
+}
+
+model ConversationMessage {
+  id             String           @id @default(cuid())
+  conversationId String
+  role           ConversationRole
+  content        String
+  createdAt      DateTime         @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+/// Audit/debug trail for every LLM call — never stores raw prompts/answers,
+/// only enough to diagnose cost, latency and failure rate.
+model LLMRequest {
+  id               String          @id @default(cuid())
+  provider         String
+  model            String
+  requestType      LLMRequestType
+  latencyMs        Int
+  success          Boolean
+  errorMessage     String?
+  promptTokens     Int?
+  completionTokens Int?
+  createdAt        DateTime        @default(now())
+
+  @@index([requestType, createdAt])
+}
