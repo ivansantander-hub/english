@@ -69,8 +69,9 @@ async function main(): Promise<void> {
     void streamConversationReply(req, res, user.id);
   });
 
-  app.listen(env.API_PORT, () => {
-    console.log(`API listening on http://localhost:${env.API_PORT}`);
+  const port = env.PORT ?? env.API_PORT;
+  app.listen(port, () => {
+    console.log(`API listening on port ${port}`);
   });
 }
 

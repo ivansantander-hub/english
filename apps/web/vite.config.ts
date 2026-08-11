@@ -6,4 +6,9 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  preview: {
+    // Railway (and most PaaS) proxy through a generated *.up.railway.app
+    // host — allow any host so `vite preview` doesn't reject the request.
+    allowedHosts: true,
+  },
 });

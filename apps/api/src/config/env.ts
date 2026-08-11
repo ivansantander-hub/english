@@ -15,6 +15,8 @@ const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   APP_URL: z.string().url().default("http://localhost:5173"),
   API_PORT: z.coerce.number().int().positive().default(4000),
+  /** Railway (and most PaaS) inject PORT and require the app to bind to it. */
+  PORT: z.coerce.number().int().positive().optional(),
 
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
 
