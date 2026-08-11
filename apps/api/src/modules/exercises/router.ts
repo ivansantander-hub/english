@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { publicProcedure, router } from "../../trpc/trpc.js";
+import { protectedProcedure, router } from "../../trpc/trpc.js";
 import { progressService } from "../progress/router.js";
 
 import { PrismaExerciseRepository } from "./exercise-repository.js";
@@ -9,7 +9,7 @@ import { ExerciseService } from "./exercise-service.js";
 const exerciseService = new ExerciseService(new PrismaExerciseRepository(), progressService);
 
 export const exerciseRouter = router({
-  getNext: publicProcedure
+  getNext: protectedProcedure
     .input(
       z
         .object({
@@ -20,11 +20,11 @@ export const exerciseRouter = router({
     )
     .query(({ ctx, input }) => exerciseService.getNext(ctx.userId, input?.mode, input?.conceptKey)),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(({ input }) => exerciseService.getById(input.id)),
 
-  getDailyPractice: publicProcedure.query(({ ctx }) =>
+  getDailyPractice: protectedProcedure.query(({ ctx }) =>
     exerciseService.getDailyPractice(ctx.userId),
   ),
 });

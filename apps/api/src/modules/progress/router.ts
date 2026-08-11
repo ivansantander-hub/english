@@ -1,13 +1,13 @@
 import { detectWeaknesses } from "@english-a1/learning";
 
-import { publicProcedure, router } from "../../trpc/trpc.js";
+import { protectedProcedure, router } from "../../trpc/trpc.js";
 
 import { ProgressService } from "./progress-service.js";
 
 export const progressService = new ProgressService();
 
 export const progressRouter = router({
-  getDashboard: publicProcedure.query(async ({ ctx }) => {
+  getDashboard: protectedProcedure.query(async ({ ctx }) => {
     const [concepts, exercisesCompleted] = await Promise.all([
       progressService.getConceptProgress(ctx.userId),
       progressService.getExercisesCompletedCount(ctx.userId),
@@ -21,7 +21,7 @@ export const progressRouter = router({
     };
   }),
 
-  getMistakes: publicProcedure.query(async ({ ctx }) => {
+  getMistakes: protectedProcedure.query(async ({ ctx }) => {
     const concepts = await progressService.getConceptProgress(ctx.userId);
     return detectWeaknesses(concepts).map((concept) => ({
       ...concept,

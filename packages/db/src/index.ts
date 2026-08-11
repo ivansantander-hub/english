@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 export * from "@prisma/client";
-export * from "./constants.js";
 
 declare global {
   var __englishA1Prisma: PrismaClient | undefined;

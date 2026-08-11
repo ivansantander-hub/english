@@ -1,15 +1,24 @@
-import { DEFAULT_USER_EMAIL, prisma } from "@english-a1/db";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import cors from "cors";
 import express from "express";
 import type { Request, Response } from "express";
 
 import { env } from "./config/env.js";
+import { AuthService } from "./modules/auth/auth-service.js";
 import { conversationService } from "./modules/conversation/router.js";
-import { createContextFactory } from "./trpc/context.js";
+import { createContext, extractBearerToken } from "./trpc/context.js";
 import { appRouter } from "./trpc/router.js";
 
-async function streamConversationReply(req: Request, res: Response, userId: string): Promise<void> {
+const authService = new AuthService();
+
+async function streamConversationReply(req: Request, res: Response): Promise<void> {
+  const token = extractBearerToken(req.headers.authorization);
+  const user = token ? await authService.resolveSession(token) : null;
+  if (!user) {
+    res.status(401).json({ error: "Log in to continue." });
+    return;
+  }
+
   const conversationId = req.params.id;
   const content: unknown = (req.body as { content?: unknown } | undefined)?.content;
   if (
@@ -27,7 +36,7 @@ async function streamConversationReply(req: Request, res: Response, userId: stri
   res.flushHeaders();
 
   try {
-    for await (const delta of conversationService.streamReply(conversationId, userId, content)) {
+    for await (const delta of conversationService.streamReply(conversationId, user.id, content)) {
       res.write(`data: ${JSON.stringify({ delta })}\n\n`);
     }
     res.write("event: done\ndata: {}\n\n");
@@ -39,14 +48,7 @@ async function streamConversationReply(req: Request, res: Response, userId: stri
   }
 }
 
-async function main(): Promise<void> {
-  const user = await prisma.user.findUnique({ where: { email: DEFAULT_USER_EMAIL } });
-  if (!user) {
-    throw new Error(
-      `Default user not found. Run "pnpm db:seed" before starting the API (looked for ${DEFAULT_USER_EMAIL}).`,
-    );
-  }
-
+function main(): void {
   const app = express();
   app.use(cors({ origin: env.APP_URL }));
   app.use(express.json());
@@ -55,18 +57,12 @@ async function main(): Promise<void> {
     res.json({ status: "ok" });
   });
 
-  app.use(
-    "/trpc",
-    trpcExpress.createExpressMiddleware({
-      router: appRouter,
-      createContext: createContextFactory(user.id),
-    }),
-  );
+  app.use("/trpc", trpcExpress.createExpressMiddleware({ router: appRouter, createContext }));
 
   // Kept outside tRPC deliberately (see architecture notes in README):
   // streaming responses don't fit tRPC's request/response model cleanly.
   app.post("/api/conversation/:id/messages", (req, res) => {
-    void streamConversationReply(req, res, user.id);
+    void streamConversationReply(req, res);
   });
 
   const port = env.PORT ?? env.API_PORT;
@@ -75,7 +71,4 @@ async function main(): Promise<void> {
   });
 }
 
-main().catch((error: unknown) => {
-  console.error("Failed to start API:", error);
-  process.exitCode = 1;
-});
+main();

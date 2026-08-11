@@ -1,15 +1,39 @@
 import { CONCEPT_SEEDS, SEED_PARAGRAPHS, SEED_SENTENCES } from "@english-a1/exercise";
+import bcrypt from "bcryptjs";
 
-import { DEFAULT_USER_EMAIL } from "../src/constants.js";
 import { prisma } from "../src/index.js";
 
-async function main(): Promise<void> {
-  console.log("Seeding default user...");
-  await prisma.user.upsert({
-    where: { email: DEFAULT_USER_EMAIL },
-    update: {},
-    create: { email: DEFAULT_USER_EMAIL },
+const ADMIN_EMAIL = "ivansantander2020@gmail.com";
+const BCRYPT_ROUNDS = 10;
+
+function generatePin(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+async function seedAdmin(): Promise<void> {
+  const existing = await prisma.user.findUnique({ where: { email: ADMIN_EMAIL } });
+  if (existing) {
+    if (existing.role !== "admin") {
+      await prisma.user.update({ where: { id: existing.id }, data: { role: "admin" } });
+    }
+    console.log(`Admin account already exists (${ADMIN_EMAIL}) — PIN unchanged.`);
+    return;
+  }
+
+  const pin = generatePin();
+  const pinHash = await bcrypt.hash(pin, BCRYPT_ROUNDS);
+  await prisma.user.create({
+    data: { email: ADMIN_EMAIL, pinHash, role: "admin" },
   });
+  console.log("=".repeat(50));
+  console.log(`Admin account created: ${ADMIN_EMAIL}`);
+  console.log(`Admin PIN: ${pin}`);
+  console.log("Save this PIN now — it is not stored in plain text.");
+  console.log("=".repeat(50));
+}
+
+async function main(): Promise<void> {
+  await seedAdmin();
 
   console.log(`Seeding ${CONCEPT_SEEDS.length} concepts...`);
   for (const concept of CONCEPT_SEEDS) {

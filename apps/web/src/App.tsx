@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import { AdminPage } from "./features/admin/AdminPage.js";
+import { useAuth } from "./features/auth/AuthContext.js";
+import { LoginPage } from "./features/auth/LoginPage.js";
 import { ConversationPage } from "./features/conversation/ConversationPage.js";
 import { DashboardPage } from "./features/dashboard/DashboardPage.js";
 import { MistakesPage } from "./features/mistakes/MistakesPage.js";
@@ -7,11 +10,12 @@ import { DailyPracticePage } from "./features/practice/DailyPracticePage.js";
 import type { PracticeParams } from "./features/practice/practice-params.js";
 import { PracticePage } from "./features/practice/PracticePage.js";
 
-type View = "practice" | "dashboard" | "mistakes" | "conversation";
+type View = "practice" | "dashboard" | "mistakes" | "conversation" | "admin";
 
 const DEFAULT_PRACTICE_PARAMS: PracticeParams = { mode: "balanced" };
 
 export function App(): React.JSX.Element {
+  const { user, isLoading, logout } = useAuth();
   const [view, setView] = useState<View>("practice");
   const [practiceParams, setPracticeParams] = useState<PracticeParams>(DEFAULT_PRACTICE_PARAMS);
 
@@ -20,11 +24,21 @@ export function App(): React.JSX.Element {
     setView("practice");
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-stone-500">Loading…</p>
+      </div>
+    );
+  }
+
+  if (!user) return <LoginPage />;
+
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-6 py-10">
       <header className="mb-10 flex items-baseline justify-between border-b border-stone-200 pb-4">
         <h1 className="font-serif text-2xl font-semibold tracking-tight">English A1</h1>
-        <nav className="flex gap-1" aria-label="Main navigation">
+        <nav className="flex flex-wrap items-baseline gap-1" aria-label="Main navigation">
           <NavButton
             label="Practice"
             active={view === "practice"}
@@ -45,6 +59,16 @@ export function App(): React.JSX.Element {
             active={view === "mistakes"}
             onClick={() => setView("mistakes")}
           />
+          {user.role === "admin" && (
+            <NavButton label="Admin" active={view === "admin"} onClick={() => setView("admin")} />
+          )}
+          <button
+            type="button"
+            onClick={() => void logout()}
+            className="ml-2 rounded px-3 py-1.5 text-sm font-medium text-stone-500 transition hover:bg-stone-200 hover:text-stone-900"
+          >
+            Log out
+          </button>
         </nav>
       </header>
 
@@ -70,6 +94,7 @@ export function App(): React.JSX.Element {
             onPracticeConcept={(conceptKey) => startPractice({ mode: "balanced", conceptKey })}
           />
         )}
+        {view === "admin" && user.role === "admin" && <AdminPage key="admin" />}
       </main>
     </div>
   );

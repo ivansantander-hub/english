@@ -2,7 +2,7 @@ import { AIService, OpenRouterProvider } from "@english-a1/ai";
 import { SubmitAnswerInputSchema } from "@english-a1/shared";
 
 import { env, llmModelFor } from "../../config/env.js";
-import { publicProcedure, router } from "../../trpc/trpc.js";
+import { protectedProcedure, router } from "../../trpc/trpc.js";
 import { exerciseService } from "../exercises/router.js";
 
 import { EvaluationService } from "./evaluation-service.js";
@@ -30,7 +30,7 @@ const evaluationService = new EvaluationService(exerciseService, {
 });
 
 export const evaluationRouter = router({
-  submitAnswer: publicProcedure
+  submitAnswer: protectedProcedure
     .input(SubmitAnswerInputSchema)
     .mutation(({ ctx, input }) =>
       evaluationService.submitAnswer(ctx.userId, input.exerciseId, input.rawAnswer),

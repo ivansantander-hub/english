@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { getStoredToken } from "../../lib/auth-storage.js";
 import { API_URL } from "../../lib/config.js";
 import { trpc } from "../../lib/trpc.js";
 
@@ -120,11 +121,16 @@ function ChatView({
     setIsStreaming(true);
 
     try {
+      const token = getStoredToken();
       const response = await fetch(`${API_URL}/api/conversation/${conversationId}/messages`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ content }),
       });
+      if (response.status === 401) throw new Error("Your session expired. Log in again.");
       if (!response.ok || !response.body) throw new Error("Request failed");
 
       const reader = response.body.getReader();
@@ -159,8 +165,12 @@ function ChatView({
           }
         }
       }
-    } catch {
-      setError("Lost connection to the tutor. Try sending your message again.");
+    } catch (err) {
+      setError(
+        err instanceof Error && err.message === "Your session expired. Log in again."
+          ? err.message
+          : "Lost connection to the tutor. Try sending your message again.",
+      );
     } finally {
       setIsStreaming(false);
     }

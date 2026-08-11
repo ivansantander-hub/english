@@ -58,15 +58,41 @@ enum ConversationRole {
   assistant
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+enum AccountRole {
+  admin
+  user
+}
 
+model User {
+  id        String      @id @default(cuid())
+  email     String      @unique
+  pinHash   String      @default("")
+  role      AccountRole @default(user)
+  createdAt DateTime    @default(now())
+
+  /// Basic brute-force protection on login — see apps/api's auth module.
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
+  sessions         Session[]
   attempts         ExerciseAttempt[]
   conceptProgress  UserConceptProgress[]
   learningSessions LearningSession[]
   conversations    Conversation[]
+}
+
+/// Long-lived login session — a random opaque token, not a JWT, so it can
+/// be revoked (logout) by deleting the row. Expiry is extended on use.
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 /// Grammar/vocabulary concept, optionally nested under a parent

@@ -2,7 +2,7 @@ import { AIService, OpenRouterProvider } from "@english-a1/ai";
 import { z } from "zod";
 
 import { env, llmModelFor } from "../../config/env.js";
-import { publicProcedure, router } from "../../trpc/trpc.js";
+import { protectedProcedure, router } from "../../trpc/trpc.js";
 
 import { ConversationService } from "./conversation-service.js";
 
@@ -23,11 +23,11 @@ export const conversationService = new ConversationService({
 });
 
 export const conversationRouter = router({
-  start: publicProcedure.mutation(({ ctx }) => conversationService.start(ctx.userId)),
+  start: protectedProcedure.mutation(({ ctx }) => conversationService.start(ctx.userId)),
 
-  list: publicProcedure.query(({ ctx }) => conversationService.list(ctx.userId)),
+  list: protectedProcedure.query(({ ctx }) => conversationService.list(ctx.userId)),
 
-  getHistory: publicProcedure
+  getHistory: protectedProcedure
     .input(z.object({ conversationId: z.string().min(1) }))
     .query(({ ctx, input }) => conversationService.getHistory(input.conversationId, ctx.userId)),
 });
