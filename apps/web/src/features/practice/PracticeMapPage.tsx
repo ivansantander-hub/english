@@ -6,14 +6,14 @@ import { ConceptNode } from "./ConceptNode.js";
 import type { StoneState } from "./ConceptNode.js";
 
 const TOPIC_THEMES = [
-  { card: "bg-coral-tint", dot: "bg-coral" },
-  { card: "bg-violet-tint", dot: "bg-violet" },
+  { card: "bg-sky-tint", dot: "bg-sky" },
+  { card: "bg-berry-tint", dot: "bg-berry" },
   { card: "bg-gold-tint", dot: "bg-gold" },
 ];
 
 function Mascot(): React.JSX.Element {
   return (
-    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-surface shadow-sm">
       <svg viewBox="0 0 32 32" fill="none" className="h-8 w-8" aria-hidden="true">
         <circle cx="16" cy="16" r="15" fill="#ffb238" />
         <circle cx="11" cy="14" r="2.4" fill="#241f21" />
@@ -41,7 +41,7 @@ export function PracticeMapPage({
 
   if (dashboard.isLoading) return <p className="text-ink/50">Loading your path…</p>;
   if (dashboard.isError || !dashboard.data) {
-    return <p className="text-red-700">Couldn&rsquo;t load your practice path.</p>;
+    return <p className="text-red-700 dark:text-red-400">Couldn&rsquo;t load your practice path.</p>;
   }
 
   const { concepts, currentStreak, todayCount, dailyGoal } = dashboard.data;
@@ -51,7 +51,7 @@ export function PracticeMapPage({
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-coral-tint to-gold-tint p-6 shadow-md">
+      <section className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-sky-tint to-gold-tint p-6 shadow-md">
         <div className="relative flex items-start justify-between gap-4">
           <h1 className="font-serif text-2xl font-extrabold leading-tight text-ink">
             {continueConcept
@@ -84,7 +84,7 @@ export function PracticeMapPage({
         <button
           type="button"
           onClick={onStartDaily}
-          className="rounded-xl bg-coral px-3.5 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
+          className="rounded-xl bg-sky px-3.5 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
         >
           Start daily practice
         </button>
@@ -103,7 +103,7 @@ export function PracticeMapPage({
                 {masteredCount}/{items.length}
               </span>
             </div>
-            <div className="flex gap-1.5 overflow-x-auto pb-1 pt-6">
+            <div className="flex flex-wrap gap-x-2 gap-y-4">
               {items.map((concept, index) => {
                 const state: StoneState =
                   concept.priority === "maintenance"
@@ -131,11 +131,11 @@ export function PracticeMapPage({
           <span className="h-4 w-4 rounded-md bg-mint" aria-hidden="true" /> Mastered
         </span>
         <span className="flex items-center gap-2">
-          <span className="h-4 w-4 rounded-md border-2 border-dashed border-coral bg-white" aria-hidden="true" />{" "}
+          <span className="h-4 w-4 rounded-md border-2 border-dashed border-sky bg-surface" aria-hidden="true" />{" "}
           You&rsquo;re here
         </span>
         <span className="flex items-center gap-2">
-          <span className="h-4 w-4 rounded-md bg-white opacity-60" aria-hidden="true" /> Not started
+          <span className="h-4 w-4 rounded-md bg-surface opacity-60" aria-hidden="true" /> Not started
         </span>
       </div>
     </div>

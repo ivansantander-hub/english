@@ -41,9 +41,9 @@ export function ExerciseCard({
   }
 
   return (
-    <div className="space-y-6 rounded-[24px] bg-white p-6 shadow-md">
+    <div className="space-y-6 rounded-[24px] bg-surface p-6 shadow-md">
       <section aria-labelledby="exercise-heading">
-        <p className="mb-1 text-xs font-bold uppercase tracking-wide text-coral">
+        <p className="mb-1 text-xs font-bold uppercase tracking-wide text-sky">
           {EXERCISE_TYPE_LABELS[exercise.type] ?? exercise.type}
         </p>
         <h2 id="exercise-heading" className="font-serif text-xl font-extrabold leading-snug text-ink">
@@ -64,7 +64,7 @@ export function ExerciseCard({
           onChange={(event) => setAnswer(event.target.value)}
           rows={exercise.type === "paragraph_translation" ? 5 : 2}
           disabled={submitAnswer.isPending || result !== undefined}
-          className="w-full resize-none rounded-xl border border-ink/15 bg-paper p-3 text-base leading-relaxed text-ink shadow-sm focus:border-coral"
+          className="w-full resize-none rounded-xl border border-ink/15 bg-paper p-3 text-base leading-relaxed text-ink shadow-sm focus:border-sky"
           placeholder="Write your answer in English…"
           autoFocus
         />
@@ -72,7 +72,7 @@ export function ExerciseCard({
           <button
             type="submit"
             disabled={submitAnswer.isPending || answer.trim().length === 0}
-            className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
+            className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
           >
             {submitAnswer.isPending ? "Checking…" : "Check answer"}
           </button>
@@ -114,7 +114,7 @@ function ResultPanel({
         {result.sentences.map((sentence) => (
           <li
             key={sentence.sentenceIndex}
-            className={`rounded-xl p-3 ${sentence.correct ? "bg-mint-tint" : "bg-coral-tint"}`}
+            className={`rounded-xl p-3 ${sentence.correct ? "bg-mint-tint" : "bg-berry-tint"}`}
           >
             <p className="font-semibold text-ink">
               {sentence.correct ? "✓" : "✗"} {sentence.text || <em>(no answer)</em>}
@@ -140,7 +140,7 @@ function ResultPanel({
       <button
         type="button"
         onClick={onNext}
-        className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
+        className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
       >
         {nextLabel}
       </button>

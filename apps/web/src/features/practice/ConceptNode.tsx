@@ -23,12 +23,14 @@ export function ConceptNode({
   const rotate = index % 2 === 0 ? "-rotate-3" : "rotate-3";
 
   return (
-    <div className="flex shrink-0 flex-col items-center gap-2.5" style={{ minWidth: "78px" }}>
-      {state === "active" && (
-        <span className="-mb-1 rounded-full bg-ink px-2 py-0.5 text-[10px] font-extrabold text-paper">
-          You&rsquo;re here
-        </span>
-      )}
+    <div className="flex w-[84px] shrink-0 flex-col items-center gap-2" style={{ minWidth: "84px" }}>
+      <span
+        className={`flex h-5 items-center justify-center rounded-full bg-ink px-2 text-[10px] font-extrabold text-paper ${
+          state === "active" ? "" : "invisible"
+        }`}
+      >
+        You&rsquo;re here
+      </span>
       <button
         type="button"
         onClick={onClick}
@@ -37,8 +39,8 @@ export function ConceptNode({
           state === "done"
             ? "bg-mint text-white"
             : state === "active"
-              ? "border-2 border-dashed border-coral bg-white text-ink"
-              : "bg-white text-ink/30"
+              ? "border-2 border-dashed border-sky bg-surface text-ink"
+              : "bg-surface text-ink/30"
         }`}
       >
         {GLYPH[state]}

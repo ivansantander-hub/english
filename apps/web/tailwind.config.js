@@ -1,15 +1,29 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        ink: "#241f21",
-        paper: "#fffdfb",
-        coral: { DEFAULT: "#ff6b57", tint: "#ffece7" },
-        violet: { DEFAULT: "#7c6ff0", tint: "#edebfd" },
-        gold: { DEFAULT: "#ffb238", tint: "#fff4de" },
-        mint: { DEFAULT: "#2fa87a", tint: "#e6f6ee" },
+        ink: "rgb(var(--color-ink) / <alpha-value>)",
+        paper: "rgb(var(--color-paper) / <alpha-value>)",
+        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        sky: {
+          DEFAULT: "rgb(var(--color-sky) / <alpha-value>)",
+          tint: "rgb(var(--color-sky-tint) / <alpha-value>)",
+        },
+        berry: {
+          DEFAULT: "rgb(var(--color-berry) / <alpha-value>)",
+          tint: "rgb(var(--color-berry-tint) / <alpha-value>)",
+        },
+        gold: {
+          DEFAULT: "rgb(var(--color-gold) / <alpha-value>)",
+          tint: "rgb(var(--color-gold-tint) / <alpha-value>)",
+        },
+        mint: {
+          DEFAULT: "rgb(var(--color-mint) / <alpha-value>)",
+          tint: "rgb(var(--color-mint-tint) / <alpha-value>)",
+        },
       },
       fontFamily: {
         // "Display" role — bold headings, big numbers. Not literally a serif;

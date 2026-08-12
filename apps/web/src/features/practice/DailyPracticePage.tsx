@@ -38,7 +38,7 @@ export function DailyPracticePage({ onExit }: { onExit?: () => void }): React.JS
     return (
       <div className="space-y-4">
         <MapLink onExit={onExit} />
-        <p className="text-red-700">Couldn&rsquo;t build a daily practice session.</p>
+        <p className="text-red-700 dark:text-red-400">Couldn&rsquo;t build a daily practice session.</p>
       </div>
     );
   }
@@ -74,7 +74,7 @@ export function DailyPracticePage({ onExit }: { onExit?: () => void }): React.JS
   }
 
   const current = plan[index];
-  if (!current) return <p className="text-red-700">Something went wrong loading this exercise.</p>;
+  if (!current) return <p className="text-red-700 dark:text-red-400">Something went wrong loading this exercise.</p>;
 
   return (
     <div className="space-y-4">
@@ -83,13 +83,13 @@ export function DailyPracticePage({ onExit }: { onExit?: () => void }): React.JS
         <span>
           Exercise {index + 1} of {plan.length}
         </span>
-        <span className="font-bold text-violet">
+        <span className="font-bold text-berry">
           {SLICE_LABELS[current.slice] ?? current.slice}
         </span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-ink/10">
         <div
-          className="h-1.5 rounded-full bg-coral transition-all"
+          className="h-1.5 rounded-full bg-sky transition-all"
           style={{ width: `${(index / plan.length) * 100}%` }}
         />
       </div>

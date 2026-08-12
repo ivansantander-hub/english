@@ -24,7 +24,7 @@ export function AdminPage(): React.JSX.Element {
 
   if (usersQuery.isLoading) return <p className="text-ink/50">Loading users…</p>;
   if (usersQuery.isError || !usersQuery.data) {
-    return <p className="text-red-700">Couldn&rsquo;t load users.</p>;
+    return <p className="text-red-700 dark:text-red-400">Couldn&rsquo;t load users.</p>;
   }
 
   const users = usersQuery.data;
@@ -160,7 +160,7 @@ function UserRow({
               <button
                 type="submit"
                 disabled={resetPin.isPending || newPin.length !== 6}
-                className="rounded-md bg-coral px-2 py-1 text-xs font-bold text-white disabled:opacity-40"
+                className="rounded-md bg-sky px-2 py-1 text-xs font-bold text-white disabled:opacity-40"
               >
                 Save
               </button>
@@ -185,7 +185,7 @@ function UserRow({
             </button>
           )}
         </div>
-        {error && <p className="mt-1 text-xs text-red-700">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-700 dark:text-red-400">{error}</p>}
       </td>
     </tr>
   );

@@ -42,7 +42,7 @@ export function PracticePage({
       {exerciseQuery.isLoading && <p className="text-ink/50">Loading exercise…</p>}
 
       {(exerciseQuery.isError || (!exerciseQuery.isLoading && !exercise)) && (
-        <p className="text-red-700">
+        <p className="text-red-700 dark:text-red-400">
           Couldn&rsquo;t load an exercise. Make sure the API is running and the database has been
           seeded.
         </p>
@@ -51,7 +51,7 @@ export function PracticePage({
       {exercise && (
         <>
           {(params.mode === "weakness" || params.conceptKey) && (
-            <p className="text-sm font-bold text-violet">
+            <p className="text-sm font-bold text-berry">
               {params.conceptKey
                 ? `Targeted practice: ${params.conceptKey.replace(/_/g, " ")}`
                 : MODE_LABELS.weakness}

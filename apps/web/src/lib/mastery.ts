@@ -8,21 +8,23 @@ export const STATUS: Record<Priority, { label: string; text: string; bar: string
   new: { label: "Not started", text: "text-ink/50", bar: "bg-ink/15", dot: "bg-ink/15" },
   high: {
     label: "Needs practice",
-    text: "text-coral",
-    bar: "bg-coral",
-    dot: "bg-coral",
+    text: "text-berry",
+    bar: "bg-berry",
+    dot: "bg-berry",
   },
   medium: {
     label: "Needs practice",
-    text: "text-coral",
-    bar: "bg-coral",
-    dot: "bg-coral",
+    text: "text-berry",
+    bar: "bg-berry",
+    dot: "bg-berry",
   },
   review: {
+    // amber-700, not the brand `gold` token — gold is too light for small
+    // body text to stay readable against the paper background.
     label: "Almost there",
-    text: "text-violet",
-    bar: "bg-violet",
-    dot: "bg-violet",
+    text: "text-amber-700 dark:text-amber-400",
+    bar: "bg-gold",
+    dot: "bg-gold",
   },
   maintenance: {
     label: "Mastered",

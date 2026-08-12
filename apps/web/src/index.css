@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-ink: 36 31 33;
+  --color-paper: 255 253 251;
+  --color-surface: 255 255 255;
+  --color-sky: 47 125 225;
+  --color-sky-tint: 232 241 254;
+  --color-berry: 196 62 86;
+  --color-berry-tint: 251 235 238;
+  --color-gold: 255 178 56;
+  --color-gold-tint: 255 244 222;
+  --color-mint: 47 168 122;
+  --color-mint-tint: 230 246 238;
+}
+
+:root.dark {
+  --color-ink: 237 239 243;
+  --color-paper: 28 26 30;
+  --color-surface: 36 34 38;
+  --color-sky: 91 155 255;
+  --color-sky-tint: 28 39 64;
+  --color-berry: 226 99 122;
+  --color-berry-tint: 58 34 41;
+  --color-gold: 255 199 102;
+  --color-gold-tint: 58 47 26;
+  --color-mint: 87 199 149;
+  --color-mint-tint: 28 51 42;
+}
+
 body {
   @apply bg-paper text-ink;
 }

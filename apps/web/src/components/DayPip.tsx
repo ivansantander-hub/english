@@ -24,7 +24,7 @@ export function DayPip({
     <div
       className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[10px] font-extrabold ${
         active ? "bg-mint text-white shadow-sm" : "border-2 border-dashed border-ink/15 text-ink/25"
-      } ${isToday ? "ring-2 ring-coral ring-offset-1 ring-offset-paper" : ""}`}
+      } ${isToday ? "ring-2 ring-sky ring-offset-1 ring-offset-paper" : ""}`}
       style={active ? { transform: `rotate(${rotation}deg)` } : undefined}
       title={title}
     >

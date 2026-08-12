@@ -50,16 +50,16 @@ function ConversationList({
           type="button"
           onClick={handleNew}
           disabled={startConversation.isPending}
-          className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
+          className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
         >
           {startConversation.isPending ? "Starting…" : "New conversation"}
         </button>
       </div>
 
-      {error && <p className="text-sm text-red-700">{error}</p>}
+      {error && <p className="text-sm text-red-700 dark:text-red-400">{error}</p>}
 
       {list.isLoading && <p className="text-ink/50">Loading conversations…</p>}
-      {list.isError && <p className="text-red-700">Couldn&rsquo;t load your conversations.</p>}
+      {list.isError && <p className="text-red-700 dark:text-red-400">Couldn&rsquo;t load your conversations.</p>}
 
       {list.data && list.data.length === 0 && (
         <p className="text-ink/50">
@@ -74,7 +74,7 @@ function ConversationList({
               <button
                 type="button"
                 onClick={() => onOpen(conversation.id)}
-                className="flex w-full items-baseline justify-between gap-4 rounded-xl px-2 py-3 text-left hover:bg-coral-tint"
+                className="flex w-full items-baseline justify-between gap-4 rounded-xl px-2 py-3 text-left hover:bg-sky-tint"
               >
                 <span className="min-w-0 flex-1 truncate text-ink">{conversation.preview}</span>
                 <span className="shrink-0 text-sm text-ink/50">
@@ -206,8 +206,8 @@ function ChatView({
             key={message.id}
             className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-base leading-relaxed shadow-sm ${
               message.role === "assistant"
-                ? "border border-ink/10 bg-white text-ink"
-                : "ml-auto bg-coral text-white"
+                ? "border border-ink/10 bg-surface text-ink"
+                : "ml-auto bg-sky text-white"
             }`}
           >
             {message.content ||
@@ -216,7 +216,7 @@ function ChatView({
         ))}
       </div>
 
-      {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-700 dark:text-red-400">{error}</p>}
 
       <form
         onSubmit={(event) => void handleSend(event)}
@@ -232,13 +232,13 @@ function ChatView({
           onChange={(event) => setInput(event.target.value)}
           disabled={isStreaming}
           placeholder="Type your reply in English…"
-          className="flex-1 rounded-xl border border-ink/15 bg-white px-3.5 py-2.5 text-base text-ink shadow-sm focus:border-coral"
+          className="flex-1 rounded-xl border border-ink/15 bg-surface px-3.5 py-2.5 text-base text-ink shadow-sm focus:border-sky"
           autoFocus
         />
         <button
           type="submit"
           disabled={isStreaming || input.trim().length === 0}
-          className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
+          className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
         >
           Send
         </button>

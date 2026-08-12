@@ -33,7 +33,7 @@ export function DashboardPage({
 
   if (dashboard.isLoading) return <p className="text-ink/50">Loading progress…</p>;
   if (dashboard.isError || !dashboard.data) {
-    return <p className="text-red-700">Couldn&rsquo;t load progress.</p>;
+    return <p className="text-red-700 dark:text-red-400">Couldn&rsquo;t load progress.</p>;
   }
 
   const {
@@ -56,7 +56,7 @@ export function DashboardPage({
   if (exercisesCompleted === 0) {
     return (
       <div className="space-y-6">
-        <section className="flex items-center gap-4 rounded-[22px] bg-coral-tint p-6">
+        <section className="flex items-center gap-4 rounded-[22px] bg-sky-tint p-6">
           <LevelBadge level={1} size="lg" />
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-ink/50">
@@ -73,7 +73,7 @@ export function DashboardPage({
         <button
           type="button"
           onClick={onDailyPractice}
-          className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
+          className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
         >
           Start daily practice
         </button>
@@ -88,7 +88,7 @@ export function DashboardPage({
 
   return (
     <div className="space-y-9">
-      <section className="rounded-[26px] bg-gradient-to-br from-gold-tint to-coral-tint p-6 shadow-md">
+      <section className="rounded-[26px] bg-gradient-to-br from-gold-tint to-sky-tint p-6 shadow-md">
         <div className="flex items-center gap-4">
           <LevelBadge level={level.level} size="lg" />
           <div className="min-w-0">
@@ -113,7 +113,7 @@ export function DashboardPage({
         <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4">
           <div>
             <div className="flex items-center gap-1.5">
-              <FlameIcon className={`h-5 w-5 ${practicedToday ? "text-coral" : "text-ink/30"}`} />
+              <FlameIcon className={`h-5 w-5 ${practicedToday ? "text-sky" : "text-ink/30"}`} />
               <p className="font-serif text-3xl font-extrabold tabular-nums text-ink">
                 {currentStreak}
               </p>
@@ -122,7 +122,7 @@ export function DashboardPage({
               day{currentStreak === 1 ? "" : "s"} streak
             </p>
             {!practicedToday && currentStreak > 0 && (
-              <p className="mt-0.5 text-xs font-bold text-coral">Practice today to keep it</p>
+              <p className="mt-0.5 text-xs font-bold text-berry">Practice today to keep it</p>
             )}
           </div>
 
@@ -172,7 +172,7 @@ export function DashboardPage({
         <button
           type="button"
           onClick={onDailyPractice}
-          className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
+          className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
         >
           Start daily practice
         </button>
@@ -180,7 +180,7 @@ export function DashboardPage({
           <button
             type="button"
             onClick={onPracticeWeaknesses}
-            className="rounded-xl border-2 border-violet px-4 py-2.5 text-sm font-bold text-violet transition hover:bg-violet-tint"
+            className="rounded-xl border-2 border-berry px-4 py-2.5 text-sm font-bold text-berry transition hover:bg-berry-tint"
           >
             Practice my weaknesses
           </button>
@@ -195,11 +195,11 @@ export function DashboardPage({
             Not started
           </li>
           <li className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-coral" aria-hidden="true" />
+            <span className="h-2.5 w-2.5 rounded-full bg-berry" aria-hidden="true" />
             Below 80% — needs practice
           </li>
           <li className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-violet" aria-hidden="true" />
+            <span className="h-2.5 w-2.5 rounded-full bg-gold" aria-hidden="true" />
             80–89% — almost there
           </li>
           <li className="flex items-center gap-2">
@@ -216,7 +216,7 @@ export function DashboardPage({
           <button
             type="button"
             onClick={() => setShowAllConcepts((v) => !v)}
-            className="font-bold text-coral hover:text-ink"
+            className="font-bold text-sky hover:text-ink"
           >
             {showAllConcepts
               ? "Hide concepts you haven't started"

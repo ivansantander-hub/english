@@ -11,7 +11,7 @@ export function MistakesPage({
 
   if (mistakesQuery.isLoading) return <p className="text-ink/50">Loading mistakes…</p>;
   if (mistakesQuery.isError || !mistakesQuery.data) {
-    return <p className="text-red-700">Couldn&rsquo;t load your recurring mistakes.</p>;
+    return <p className="text-red-700 dark:text-red-400">Couldn&rsquo;t load your recurring mistakes.</p>;
   }
 
   const mistakes = mistakesQuery.data;

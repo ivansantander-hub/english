@@ -2,6 +2,7 @@ import { useAuth } from "../features/auth/AuthContext.js";
 import { trpc } from "../lib/trpc.js";
 
 import { FlameIcon } from "./FlameIcon.js";
+import { ThemeToggle } from "./ThemeToggle.js";
 
 export type View = "practice" | "dashboard" | "mistakes" | "conversation" | "admin";
 
@@ -33,7 +34,7 @@ export function AppShell({
     <div className="min-h-screen bg-paper">
       <header className="sticky top-0 z-10 border-b border-ink/8 bg-paper/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center gap-3.5 px-6 py-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-coral font-serif text-sm font-extrabold text-white shadow-sm">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky font-serif text-sm font-extrabold text-white shadow-sm">
             A1
           </div>
           <span className="font-serif text-lg font-extrabold">English Line</span>
@@ -54,9 +55,10 @@ export function AppShell({
                 : `${streak} day streak — practice today to keep it`
             }
           >
-            <FlameIcon className={`h-4 w-4 ${practicedToday ? "text-coral" : "text-ink/25"}`} />
+            <FlameIcon className={`h-4 w-4 ${practicedToday ? "text-sky" : "text-ink/25"}`} />
             <span className="font-mono text-sm font-semibold tabular-nums text-ink">{streak}</span>
           </div>
+          <ThemeToggle />
           <button
             type="button"
             onClick={() => void logout()}
@@ -95,7 +97,7 @@ function NavPill({
       onClick={onClick}
       aria-current={active ? "page" : undefined}
       className={`shrink-0 rounded-xl px-3.5 py-2 text-sm font-bold transition ${
-        active ? "bg-coral-tint text-ink" : "text-ink/55 hover:bg-coral-tint/60 hover:text-ink"
+        active ? "bg-sky-tint text-ink" : "text-ink/55 hover:bg-sky-tint/60 hover:text-ink"
       }`}
     >
       {children}

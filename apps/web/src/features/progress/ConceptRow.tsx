@@ -44,7 +44,7 @@ export function ConceptRow({
           <button
             type="button"
             onClick={onPractice}
-            className="shrink-0 text-xs font-bold text-coral hover:text-ink"
+            className="shrink-0 text-xs font-bold text-sky hover:text-ink"
           >
             Practice this →
           </button>
