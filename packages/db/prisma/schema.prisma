@@ -64,11 +64,15 @@ enum AccountRole {
 }
 
 model User {
-  id        String      @id @default(cuid())
-  email     String      @unique
-  pinHash   String      @default("")
-  role      AccountRole @default(user)
-  createdAt DateTime    @default(now())
+  id           String      @id @default(cuid())
+  email        String      @unique
+  pinHash      String      @default("")
+  role         AccountRole @default(user)
+  createdAt    DateTime    @default(now())
+
+  /// The CEFR level this user is currently practicing at. Drives which
+  /// exercises loadSelectionData() offers — see apps/api's exercise module.
+  currentLevel CefrLevel @default(A1)
 
   /// Basic brute-force protection on login — see apps/api's auth module.
   failedLoginAttempts Int       @default(0)

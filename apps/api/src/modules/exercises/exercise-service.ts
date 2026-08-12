@@ -99,7 +99,7 @@ export class ExerciseService {
     history: ExerciseHistory;
     concepts: ConceptProgress[];
   }> {
-    const [allExercises, attempts, concepts] = await Promise.all([
+    const [allExercises, attempts, concepts, user] = await Promise.all([
       this.repository.findAll(),
       prisma.exerciseAttempt.findMany({
         where: { userId },
@@ -107,11 +107,12 @@ export class ExerciseService {
         orderBy: { createdAt: "asc" },
       }),
       this.progressService.getConceptProgress(userId),
+      prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { currentLevel: true } }),
     ]);
 
-    const candidates = filterExercises(allExercises, { level: "A1" });
+    const candidates = filterExercises(allExercises, { level: user.currentLevel });
     if (candidates.length === 0) {
-      throw new NotFoundError("No exercises available for level A1");
+      throw new NotFoundError(`No exercises available for level ${user.currentLevel}`);
     }
     const recentIds = attempts.slice(-RECENT_HISTORY_SIZE).map((attempt) => attempt.exerciseId);
 
