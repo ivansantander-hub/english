@@ -25,7 +25,6 @@ export function App(): React.JSX.Element {
   }
 
   function handleNavigate(next: View): void {
-    if (next === "practice") setPracticeParams(null);
     setView(next);
   }
 
@@ -41,8 +40,8 @@ export function App(): React.JSX.Element {
 
   return (
     <AppShell view={view} onNavigate={handleNavigate}>
-      {view === "practice" &&
-        (practiceParams === null ? (
+      <div className={view === "practice" ? undefined : "hidden"}>
+        {practiceParams === null ? (
           <PracticeMapPage
             key="map"
             onStartConcept={(conceptKey) => startPractice({ mode: "balanced", conceptKey })}
@@ -56,7 +55,8 @@ export function App(): React.JSX.Element {
             params={practiceParams}
             onExit={() => setPracticeParams(null)}
           />
-        ))}
+        )}
+      </div>
       {view === "conversation" && <ConversationPage key="conversation" />}
       {view === "dashboard" && (
         <DashboardPage

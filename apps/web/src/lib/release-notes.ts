@@ -13,6 +13,23 @@ export interface ReleaseNote {
 /** Newest first. The footer's version link always reads RELEASE_NOTES[0].version. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "1.1.2",
+    date: "2026-08-12",
+    type: "patch",
+    title: "Practice stays put when you switch tabs",
+    titleEs: "Practice se queda como estaba al cambiar de pestaña",
+    notes: [
+      "Switching to Talk, Progress, or Mistakes and coming back used to give you a brand-new question — fixed.",
+      "Your current exercise, draft answer, and daily-practice progress now stay exactly as you left them.",
+      "Skipping an exercise now clears the answer box instead of carrying over the old draft.",
+    ],
+    notesEs: [
+      "Cambiar a Talk, Progress o Mistakes y volver te daba una pregunta nueva — ya está arreglado.",
+      "Tu ejercicio actual, tu respuesta a medio escribir, y tu progreso en la práctica diaria ahora se quedan tal como los dejaste.",
+      "Saltar un ejercicio ahora limpia el cuadro de respuesta en vez de arrastrar el borrador anterior.",
+    ],
+  },
+  {
     version: "1.1.1",
     date: "2026-08-12",
     type: "patch",

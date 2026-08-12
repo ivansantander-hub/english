@@ -44,7 +44,12 @@ export function ExerciseCard({
   function handleSkip(): void {
     skipExercise.mutate(
       { exerciseId: exercise.id },
-      { onSuccess: () => onNext(0) },
+      {
+        onSuccess: () => {
+          setAnswer("");
+          onNext(0);
+        },
+      },
     );
   }
 

@@ -2,6 +2,13 @@
 
 All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the footer) shows a bilingual, learner-facing version of these same entries.
 
+## [1.1.2] - 2026-08-12
+
+### Fixed
+
+- Switching tabs (Talk, Progress, Mistakes) and coming back to Practice used to show a brand-new random exercise, discarding whatever you were working on — navigating to Practice unconditionally reset back to the map, and the whole Practice view unmounted whenever you left it, so even your draft answer was lost. The Practice view now stays alive in the background: your current exercise, draft answer, and (for daily practice) your position and XP all survive switching tabs. Only finishing an exercise or explicitly skipping it moves you to the next one.
+- Skipping an exercise now also clears the answer box, instead of carrying the old draft over to the next question.
+
 ## [1.1.1] - 2026-08-12
 
 ### Changed
