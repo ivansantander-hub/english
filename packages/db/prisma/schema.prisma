@@ -63,6 +63,11 @@ enum AccountRole {
   user
 }
 
+enum GradedBy {
+  ai
+  rules
+}
+
 model User {
   id           String      @id @default(cuid())
   email        String      @unique
@@ -83,6 +88,7 @@ model User {
   conceptProgress  UserConceptProgress[]
   learningSessions LearningSession[]
   conversations    Conversation[]
+  llmRequests      LLMRequest[]
 }
 
 /// Long-lived login session — a random opaque token, not a JWT, so it can
@@ -146,12 +152,18 @@ model ExerciseConcept {
 }
 
 model ExerciseAttempt {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   userId       String
   exerciseId   String
   rawAnswer    String
   overallScore Float
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
+
+  /// Null for attempts recorded before this field existed — genuinely
+  /// unknown, not a guess. Always set for new attempts: "ai" vs "rules"
+  /// (crude exact-match fallback) matters for pattern analysis since the
+  /// two scoring methods aren't comparably strict.
+  gradedBy     GradedBy?
 
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   exercise  Exercise         @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
@@ -244,6 +256,7 @@ model ConversationMessage {
 /// only enough to diagnose cost, latency and failure rate.
 model LLMRequest {
   id               String          @id @default(cuid())
+  userId           String?
   provider         String
   model            String
   requestType      LLMRequestType
@@ -254,5 +267,8 @@ model LLMRequest {
   completionTokens Int?
   createdAt        DateTime        @default(now())
 
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   @@index([requestType, createdAt])
+  @@index([userId, createdAt])
 }

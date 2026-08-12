@@ -135,7 +135,7 @@ export class ConversationService {
       errorMessage = error instanceof Error ? error.message : String(error);
     }
 
-    await this.logLLMRequest({
+    await this.logLLMRequest(userId, {
       success,
       latencyMs: Date.now() - startedAt,
       ...(errorMessage !== undefined ? { errorMessage } : {}),
@@ -158,13 +158,17 @@ export class ConversationService {
     }
   }
 
-  private async logLLMRequest(meta: {
-    success: boolean;
-    latencyMs: number;
-    errorMessage?: string;
-  }): Promise<void> {
+  private async logLLMRequest(
+    userId: string,
+    meta: {
+      success: boolean;
+      latencyMs: number;
+      errorMessage?: string;
+    },
+  ): Promise<void> {
     await prisma.lLMRequest.create({
       data: {
+        userId,
         provider: this.config.providerName,
         model: this.config.model,
         requestType: "conversation",

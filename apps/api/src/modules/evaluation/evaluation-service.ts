@@ -36,7 +36,7 @@ export class EvaluationService {
       );
     }
 
-    const { evaluation, gradedBy } = await this.grade({
+    const { evaluation, gradedBy } = await this.grade(userId, {
       sourceText: exercise.spanishText ?? exercise.prompt ?? "",
       referenceAnswer: exercise.expectedAnswer,
       rawAnswer,
@@ -49,6 +49,7 @@ export class EvaluationService {
         exerciseId,
         rawAnswer,
         overallScore: evaluation.overallScore,
+        gradedBy,
         sentences: {
           create: evaluation.sentences.map((sentence) => ({
             sentenceIndex: sentence.sentenceIndex,
@@ -80,12 +81,15 @@ export class EvaluationService {
    * no provider is configured, or if the AI call/validation fails — the
    * learner always gets a result, never a 500.
    */
-  private async grade(input: {
-    sourceText: string;
-    referenceAnswer: string;
-    rawAnswer: string;
-    contextHint?: string;
-  }): Promise<{ evaluation: EvaluationResult; gradedBy: "ai" | "rules" }> {
+  private async grade(
+    userId: string,
+    input: {
+      sourceText: string;
+      referenceAnswer: string;
+      rawAnswer: string;
+      contextHint?: string;
+    },
+  ): Promise<{ evaluation: EvaluationResult; gradedBy: "ai" | "rules" }> {
     if (!this.config.aiService) {
       return {
         evaluation: evaluateWithRules(input.rawAnswer, input.referenceAnswer),
@@ -99,11 +103,11 @@ export class EvaluationService {
         model: this.config.model,
         providerName: this.config.providerName,
       });
-      await this.logLLMRequest(outcome.meta);
+      await this.logLLMRequest(userId, outcome.meta);
       return { evaluation: outcome.evaluation, gradedBy: "ai" };
     } catch (error) {
       if (error instanceof AIEvaluationFailedError) {
-        await this.logLLMRequest(error.meta);
+        await this.logLLMRequest(userId, error.meta);
         return {
           evaluation: evaluateWithRules(input.rawAnswer, input.referenceAnswer),
           gradedBy: "rules",
@@ -113,9 +117,10 @@ export class EvaluationService {
     }
   }
 
-  private async logLLMRequest(meta: LLMCallMeta): Promise<void> {
+  private async logLLMRequest(userId: string, meta: LLMCallMeta): Promise<void> {
     await prisma.lLMRequest.create({
       data: {
+        userId,
         provider: meta.provider,
         model: meta.model,
         requestType: meta.requestType,
