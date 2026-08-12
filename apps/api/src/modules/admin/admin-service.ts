@@ -10,6 +10,7 @@ export interface UserSummary {
   role: AccountRole;
   createdAt: Date;
   exercisesCompleted: number;
+  exercisesSkipped: number;
   overallAccuracy: number;
 }
 
@@ -27,8 +28,9 @@ export class AdminService {
 
     return Promise.all(
       users.map(async (user) => {
-        const [exercisesCompleted, progressAgg] = await Promise.all([
+        const [exercisesCompleted, exercisesSkipped, progressAgg] = await Promise.all([
           prisma.exerciseAttempt.count({ where: { userId: user.id } }),
+          prisma.exerciseSkip.count({ where: { userId: user.id } }),
           prisma.userConceptProgress.aggregate({
             where: { userId: user.id },
             _sum: { attempts: true, correct: true },
@@ -41,6 +43,7 @@ export class AdminService {
           role: user.role,
           createdAt: user.createdAt,
           exercisesCompleted,
+          exercisesSkipped,
           overallAccuracy: computeAccuracy(
             progressAgg._sum.attempts ?? 0,
             progressAgg._sum.correct ?? 0,

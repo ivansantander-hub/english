@@ -40,6 +40,7 @@ export function DashboardPage({
     concepts,
     overallAccuracy,
     exercisesCompleted,
+    exercisesSkipped,
     currentStreak,
     practicedToday,
     todayCount,
@@ -149,6 +150,8 @@ export function DashboardPage({
         Accuracy is correct ÷ attempts across every grammar concept you&rsquo;ve practiced —
         one exercise can touch several concepts at once, so it moves faster than the exercise
         count above.
+        {exercisesSkipped > 0 &&
+          ` You've skipped ${exercisesSkipped} exercise${exercisesSkipped === 1 ? "" : "s"} without answering.`}
       </p>
 
       <section>

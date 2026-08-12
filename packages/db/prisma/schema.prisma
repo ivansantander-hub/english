@@ -85,6 +85,7 @@ model User {
 
   sessions         Session[]
   attempts         ExerciseAttempt[]
+  skips            ExerciseSkip[]
   conceptProgress  UserConceptProgress[]
   learningSessions LearningSession[]
   conversations    Conversation[]
@@ -137,6 +138,7 @@ model Exercise {
 
   concepts ExerciseConcept[]
   attempts ExerciseAttempt[]
+  skips    ExerciseSkip[]
 
   @@index([grammarTopic, level, difficulty])
 }
@@ -200,6 +202,22 @@ model Error {
 
   @@index([sentenceResultId])
   @@index([type, category])
+}
+
+/// Audit trail for exercises the learner chose to skip rather than answer —
+/// separate from ExerciseAttempt since a skip is explicitly not an attempt
+/// and shouldn't affect UserConceptProgress.
+model ExerciseSkip {
+  id         String   @id @default(cuid())
+  userId     String
+  exerciseId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([exerciseId])
 }
 
 model UserConceptProgress {

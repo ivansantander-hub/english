@@ -8,9 +8,10 @@ export const progressService = new ProgressService();
 
 export const progressRouter = router({
   getDashboard: protectedProcedure.query(async ({ ctx }) => {
-    const [concepts, exercisesCompleted, activitySummary] = await Promise.all([
+    const [concepts, exercisesCompleted, exercisesSkipped, activitySummary] = await Promise.all([
       progressService.getConceptProgress(ctx.userId),
       progressService.getExercisesCompletedCount(ctx.userId),
+      progressService.getExercisesSkippedCount(ctx.userId),
       progressService.getActivitySummary(ctx.userId),
     ]);
     const totalAttempts = concepts.reduce((sum, c) => sum + c.attempts, 0);
@@ -18,6 +19,7 @@ export const progressRouter = router({
     return {
       concepts,
       exercisesCompleted,
+      exercisesSkipped,
       overallAccuracy: totalAttempts > 0 ? totalCorrect / totalAttempts : 0,
       dailyGoal: DAILY_PRACTICE_SIZE,
       ...activitySummary,

@@ -1,10 +1,19 @@
 import { useAuth } from "../features/auth/AuthContext.js";
+import { RELEASE_NOTES } from "../lib/release-notes.js";
 import { trpc } from "../lib/trpc.js";
 
 import { FlameIcon } from "./FlameIcon.js";
 import { ThemeToggle } from "./ThemeToggle.js";
 
-export type View = "practice" | "dashboard" | "mistakes" | "conversation" | "admin";
+export type View =
+  | "practice"
+  | "dashboard"
+  | "mistakes"
+  | "conversation"
+  | "admin"
+  | "release-notes";
+
+const APP_VERSION = RELEASE_NOTES[0]?.version ?? "0.0.0";
 
 const NAV_ITEMS: { view: View; label: string }[] = [
   { view: "practice", label: "Practice" },
@@ -38,6 +47,14 @@ export function AppShell({
             A1
           </div>
           <span className="font-serif text-lg font-extrabold">English Line</span>
+          <button
+            type="button"
+            onClick={() => onNavigate("release-notes")}
+            className="font-mono text-xs font-semibold text-ink/40 transition hover:text-ink"
+            title="What's new"
+          >
+            v{APP_VERSION}
+          </button>
 
           <nav className="ml-auto hidden gap-0.5 sm:flex" aria-label="Main navigation">
             {navItems.map((item) => (

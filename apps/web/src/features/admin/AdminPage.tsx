@@ -9,6 +9,7 @@ interface AdminUser {
   role: "admin" | "user";
   createdAt: string | Date;
   exercisesCompleted: number;
+  exercisesSkipped: number;
   overallAccuracy: number;
 }
 
@@ -47,6 +48,7 @@ export function AdminPage(): React.JSX.Element {
               <th className="py-2 pr-4 font-medium">Email</th>
               <th className="py-2 pr-4 font-medium">Role</th>
               <th className="py-2 pr-4 font-medium">Exercises</th>
+              <th className="py-2 pr-4 font-medium">Skipped</th>
               <th className="py-2 pr-4 font-medium">Accuracy</th>
               <th className="py-2 pr-4 font-medium">Joined</th>
               <th className="py-2 font-medium">Actions</th>
@@ -125,6 +127,7 @@ function UserRow({
         </span>
       </td>
       <td className="py-2.5 pr-4 tabular-nums">{user.exercisesCompleted}</td>
+      <td className="py-2.5 pr-4 tabular-nums">{user.exercisesSkipped}</td>
       <td className="py-2.5 pr-4 tabular-nums">
         {user.exercisesCompleted > 0 ? `${Math.round(user.overallAccuracy * 100)}%` : "—"}
       </td>

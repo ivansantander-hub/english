@@ -12,6 +12,7 @@ import { DailyPracticePage } from "./features/practice/DailyPracticePage.js";
 import type { PracticeParams } from "./features/practice/practice-params.js";
 import { PracticeMapPage } from "./features/practice/PracticeMapPage.js";
 import { PracticePage } from "./features/practice/PracticePage.js";
+import { ReleaseNotesPage } from "./features/release-notes/ReleaseNotesPage.js";
 
 export function App(): React.JSX.Element {
   const { user, isLoading } = useAuth();
@@ -69,6 +70,9 @@ export function App(): React.JSX.Element {
         />
       )}
       {view === "admin" && user.role === "admin" && <AdminPage key="admin" />}
+      {view === "release-notes" && (
+        <ReleaseNotesPage key="release-notes" onBack={() => handleNavigate("practice")} />
+      )}
     </AppShell>
   );
 }

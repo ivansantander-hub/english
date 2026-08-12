@@ -36,6 +36,11 @@ export class ExerciseService {
     return exercise;
   }
 
+  /** Records that the learner chose to skip this exercise rather than answer it. */
+  async recordSkip(userId: string, exerciseId: string): Promise<void> {
+    await prisma.exerciseSkip.create({ data: { userId, exerciseId } });
+  }
+
   /**
    * Picks the next exercise for a user. "weakness" mode targets the
    * learner's lowest-accuracy concepts first; "balanced" picks a
@@ -99,12 +104,18 @@ export class ExerciseService {
     history: ExerciseHistory;
     concepts: ConceptProgress[];
   }> {
-    const [allExercises, attempts, concepts, user] = await Promise.all([
+    const [allExercises, attempts, recentSkips, concepts, user] = await Promise.all([
       this.repository.findAll(),
       prisma.exerciseAttempt.findMany({
         where: { userId },
         select: { exerciseId: true, overallScore: true, createdAt: true },
         orderBy: { createdAt: "asc" },
+      }),
+      prisma.exerciseSkip.findMany({
+        where: { userId },
+        select: { exerciseId: true },
+        orderBy: { createdAt: "desc" },
+        take: RECENT_HISTORY_SIZE,
       }),
       this.progressService.getConceptProgress(userId),
       prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { currentLevel: true } }),
@@ -114,7 +125,14 @@ export class ExerciseService {
     if (candidates.length === 0) {
       throw new NotFoundError(`No exercises available for level ${user.currentLevel}`);
     }
-    const recentIds = attempts.slice(-RECENT_HISTORY_SIZE).map((attempt) => attempt.exerciseId);
+    // A just-skipped exercise shouldn't immediately resurface as "next", even
+    // though skipping isn't an attempt and doesn't touch ExerciseAttempt.
+    const recentIds = [
+      ...new Set([
+        ...attempts.slice(-RECENT_HISTORY_SIZE).map((attempt) => attempt.exerciseId),
+        ...recentSkips.map((skip) => skip.exerciseId),
+      ]),
+    ];
 
     const history = new Map<string, { attempts: number; everFullyCorrect: boolean }>();
     for (const attempt of attempts) {

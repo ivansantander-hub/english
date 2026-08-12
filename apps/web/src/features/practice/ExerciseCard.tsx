@@ -24,6 +24,7 @@ export function ExerciseCard({
   nextLabel?: string;
 }): React.JSX.Element {
   const submitAnswer = trpc.evaluation.submitAnswer.useMutation();
+  const skipExercise = trpc.exercise.skip.useMutation();
   const [answer, setAnswer] = useState("");
   const result = submitAnswer.data;
 
@@ -38,6 +39,13 @@ export function ExerciseCard({
     setAnswer("");
     submitAnswer.reset();
     onNext(earnedXp);
+  }
+
+  function handleSkip(): void {
+    skipExercise.mutate(
+      { exerciseId: exercise.id },
+      { onSuccess: () => onNext(0) },
+    );
   }
 
   return (
@@ -69,13 +77,23 @@ export function ExerciseCard({
           autoFocus
         />
         {!result && (
-          <button
-            type="submit"
-            disabled={submitAnswer.isPending || answer.trim().length === 0}
-            className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
-          >
-            {submitAnswer.isPending ? "Checking…" : "Check answer"}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={submitAnswer.isPending || answer.trim().length === 0}
+              className="rounded-xl bg-sky px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
+            >
+              {submitAnswer.isPending ? "Checking…" : "Check answer"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSkip}
+              disabled={skipExercise.isPending}
+              className="text-sm font-semibold text-ink/50 transition hover:text-ink disabled:opacity-40"
+            >
+              {skipExercise.isPending ? "Skipping…" : "Skip this one"}
+            </button>
+          </div>
         )}
       </form>
 

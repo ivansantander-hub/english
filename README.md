@@ -28,6 +28,10 @@ Email + 6-digit PIN (bcrypt-hashed), open self-registration — anyone can creat
 
 Semantic color tokens (`ink`, `paper`, `surface`, `sky`, `berry`, `gold`, `mint`) defined as CSS custom properties in `apps/web/src/index.css`, mapped in `apps/web/tailwind.config.js`. `sky` (blue) is the primary/brand color, `berry` (red) marks errors and "needs practice", `gold` marks near-mastery, `mint` marks mastery — deliberately not orange/purple, to avoid the generic AI-app look. Dark mode is a real `class`-strategy theme (not just `prefers-color-scheme`): an inline anti-flash script in `index.html` sets the `dark` class on `<html>` before first paint based on saved preference or OS default, and `ThemeToggle` in the header lets you override and persist the choice.
 
+### Versioning
+
+One app-wide version (root `package.json`), semantic (`MAJOR.MINOR.PATCH`): patch = fixes, minor = new capability, major = a structural change to how the app works. Every version bump gets an entry in [`CHANGELOG.md`](./CHANGELOG.md) (English, dev-facing) and a matching bilingual entry in `apps/web/src/lib/release-notes.ts`, which drives the in-app release notes page — reachable by tapping the version number in the header. Keep both in sync when shipping a versioned change.
+
 ## Requirements
 
 - Node.js 20+
@@ -104,6 +108,8 @@ Open http://localhost:5173 and register an account (or log in as the seeded admi
 ## Data model, for analysis
 
 Every attempt is captured at sentence and error granularity — `ExerciseAttempt` → `SentenceResult` → `Error` (typed via the `ErrorType` enum: `grammar`, `verb_tense`, `word_order`, `preposition`, `article`, ...) — so patterns in what a user gets wrong can be queried directly instead of re-derived. `Error.type` is the reliable dimension to group by; `Error.category` is a free-form snake_case label the model generates per error and isn't normalized, so treat it as detail text, not a bucket to aggregate on. `User.currentLevel` (CEFR) already drives exercise selection, ready for A2+ content whenever it's seeded — today everything is A1.
+
+Exercises a user skips instead of answering are captured separately in `ExerciseSkip` (not `ExerciseAttempt` — a skip isn't an attempt and doesn't touch `UserConceptProgress`), so skip counts don't dilute accuracy stats but are still queryable per user or per exercise. Totals show on the Dashboard (your own) and Admin (everyone's); a per-type/per-topic breakdown isn't built yet but is directly queryable via `ExerciseSkip.exercise.type`/`grammarTopic`.
 
 ## Known simplifications (documented, not accidental)
 

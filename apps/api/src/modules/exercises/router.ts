@@ -27,6 +27,10 @@ export const exerciseRouter = router({
   getDailyPractice: protectedProcedure.query(({ ctx }) =>
     exerciseService.getDailyPractice(ctx.userId),
   ),
+
+  skip: protectedProcedure
+    .input(z.object({ exerciseId: z.string().min(1) }))
+    .mutation(({ ctx, input }) => exerciseService.recordSkip(ctx.userId, input.exerciseId)),
 });
 
 export { exerciseService };

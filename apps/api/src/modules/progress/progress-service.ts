@@ -62,6 +62,10 @@ export class ProgressService {
     return prisma.exerciseAttempt.count({ where: { userId } });
   }
 
+  async getExercisesSkippedCount(userId: string): Promise<number> {
+    return prisma.exerciseSkip.count({ where: { userId } });
+  }
+
   /** Recent daily activity plus the current practice streak, for the progress dashboard. */
   async getActivitySummary(userId: string, days = 14): Promise<ActivitySummary> {
     const since = new Date();
