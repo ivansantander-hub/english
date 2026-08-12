@@ -13,6 +13,19 @@ export interface ReleaseNote {
 /** Newest first. The footer's version link always reads RELEASE_NOTES[0].version. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "1.1.3",
+    date: "2026-08-12",
+    type: "patch",
+    title: "Fixed it for real this time",
+    titleEs: "Ahora sí quedó arreglado",
+    notes: [
+      "Switching to a different browser tab and back was still resetting your exercise — now it doesn't.",
+    ],
+    notesEs: [
+      "Cambiar a otra pestaña del navegador y volver todavía reiniciaba tu ejercicio — ya no.",
+    ],
+  },
+  {
     version: "1.1.2",
     date: "2026-08-12",
     type: "patch",

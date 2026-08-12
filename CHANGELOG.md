@@ -2,6 +2,12 @@
 
 All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the footer) shows a bilingual, learner-facing version of these same entries.
 
+## [1.1.3] - 2026-08-12
+
+### Fixed
+
+- The 1.1.2 fix covered switching tabs inside the app, but switching to a different *browser* tab and back still reset Practice — caused by React Query's default `refetchOnWindowFocus`, which silently refetches every active query (including the not-idempotent `exercise.getNext`, which always picks anew) whenever the browser tab regains focus. Disabled globally: this is a single learner's personal app, not a multi-actor dashboard, so nothing changes server-side while the tab is unfocused — refetching on focus only risked discarding in-progress state.
+
 ## [1.1.2] - 2026-08-12
 
 ### Fixed
