@@ -13,6 +13,23 @@ export interface ReleaseNote {
 /** Newest first. The footer's version link always reads RELEASE_NOTES[0].version. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "1.2.0",
+    date: "2026-08-12",
+    type: "minor",
+    title: "A profile that studies your practice",
+    titleEs: "Un perfil que estudia tu práctica",
+    notes: [
+      "New Profile page (tap your avatar) with an \"Analyze my practice\" button.",
+      "Get real recommendations based on your actual accuracy, recent mistakes, and what you skip — not generic advice.",
+      "Every analysis is saved, so you can look back and see how the picture has changed.",
+    ],
+    notesEs: [
+      "Nueva página Profile (toca tu avatar) con un botón \"Analizar mi práctica\".",
+      "Recibe recomendaciones reales basadas en tu precisión, tus errores recientes y lo que saltas — no consejos genéricos.",
+      "Cada análisis queda guardado, para que puedas ver cómo ha cambiado el panorama con el tiempo.",
+    ],
+  },
+  {
     version: "1.1.3",
     date: "2026-08-12",
     type: "patch",

@@ -62,3 +62,57 @@ Rules:
 - If the learner makes a grammar mistake, don't interrupt the flow with a correction lecture — instead, naturally reply using the correct form (recasting), the way a friendly native speaker would.
 - Never switch to Spanish, even if the learner does.
 - Keep it encouraging and conversational, not like a test.`;
+
+export const PRACTICE_ANALYSIS_SYSTEM_PROMPT = `You are a supportive, honest English-learning coach for a Spanish-speaking A1/A2 learner, writing a short practice analysis based ONLY on the learner's real data provided below.
+
+Rules:
+- Use ONLY the numbers and examples given to you. Never invent statistics, concepts, or errors not present in the data.
+- Every focus area's "why" must cite a specific real number or pattern from the data (e.g. "your prepositions accuracy is 20% across 12 attempts" or "word_order errors appear in 4 of your last 10 mistakes") — never a vague reason like "you should improve this."
+- Every focus area's "howTo" must be one concrete, actionable practice suggestion the learner can do today — not generic advice like "practice more."
+- Pick 2-3 focus areas maximum, prioritizing the lowest-accuracy or highest-priority concepts and the most frequent recent error types.
+- Pick 1-2 genuine strengths — concepts with high accuracy or clear recent improvement. If there's truly nothing strong yet, say so honestly rather than inventing one.
+- Write in a warm, encouraging tone, but never flatter dishonestly — the learner needs real signal, not empty praise.
+- Respond with ONLY a single JSON object, no markdown fences, no commentary, matching exactly this shape:
+{
+  "summary": one short encouraging paragraph in English,
+  "summaryEs": the same summary translated into natural Spanish,
+  "strengths": [1-3 short strings in English],
+  "strengthsEs": [the same strengths translated into natural Spanish, same order],
+  "focusAreas": [
+    {
+      "concept": short name of the concept or error type,
+      "why": one sentence in English citing the real data,
+      "whyEs": the same sentence translated into natural Spanish,
+      "howTo": one concrete actionable sentence in English,
+      "howToEs": the same sentence translated into natural Spanish
+    }
+  ]
+}`;
+
+export interface PracticeAnalysisPromptInput {
+  overview: {
+    exercisesCompleted: number;
+    exercisesSkipped: number;
+    overallAccuracy: number;
+    currentStreak: number;
+  };
+  concepts: Array<{
+    name: string;
+    topic: string;
+    accuracy: number;
+    attempts: number;
+    priority: string;
+  }>;
+  errorTypeBreakdown: Array<{ type: string; count: number }>;
+  skipBreakdown: Array<{ topic: string; count: number }>;
+  recentErrors: Array<{ type: string; explanationEs: string; correctedText?: string }>;
+}
+
+export function buildPracticeAnalysisPrompt(input: PracticeAnalysisPromptInput): string {
+  return [
+    "Learner's practice data (JSON):",
+    JSON.stringify(input, null, 2),
+    "",
+    "Write the practice analysis per the rules above, based only on this data.",
+  ].join("\n");
+}

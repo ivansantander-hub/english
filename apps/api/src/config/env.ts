@@ -27,6 +27,7 @@ const EnvSchema = z.object({
   EVALUATION_MODEL: optionalString(),
   GENERATION_MODEL: optionalString(),
   CONVERSATION_MODEL: optionalString(),
+  ANALYSIS_MODEL: optionalString(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
@@ -47,11 +48,14 @@ function loadEnv(): Env {
  */
 export const env: Env = loadEnv();
 
-export const llmModelFor = (capability: "evaluation" | "generation" | "conversation"): string => {
+export const llmModelFor = (
+  capability: "evaluation" | "generation" | "conversation" | "analysis",
+): string => {
   const overrides: Record<typeof capability, string | undefined> = {
     evaluation: env.EVALUATION_MODEL,
     generation: env.GENERATION_MODEL,
     conversation: env.CONVERSATION_MODEL,
+    analysis: env.ANALYSIS_MODEL,
   };
   return overrides[capability] ?? env.LLM_MODEL;
 };

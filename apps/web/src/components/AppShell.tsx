@@ -14,7 +14,8 @@ export type View =
   | "mistakes"
   | "conversation"
   | "admin"
-  | "release-notes";
+  | "release-notes"
+  | "profile";
 
 const APP_VERSION = RELEASE_NOTES[0]?.version ?? "0.0.0";
 
@@ -72,7 +73,13 @@ export function AppShell({
               <span className="font-mono text-sm font-semibold tabular-nums text-ink">{streak}</span>
             </div>
             <ThemeToggle />
-            {user && <AccountMenu email={user.email} onLogout={() => void logout()} />}
+            {user && (
+              <AccountMenu
+                email={user.email}
+                onProfile={() => onNavigate("profile")}
+                onLogout={() => void logout()}
+              />
+            )}
           </div>
         </div>
       </header>
@@ -137,9 +144,11 @@ function TabButton({
 
 function AccountMenu({
   email,
+  onProfile,
   onLogout,
 }: {
   email: string;
+  onProfile: () => void;
   onLogout: () => void;
 }): React.JSX.Element {
   const [open, setOpen] = useState(false);
@@ -167,6 +176,16 @@ function AccountMenu({
           />
           <div className="absolute right-0 top-10 z-20 w-52 rounded-xl border border-ink/10 bg-surface p-2 shadow-lg">
             <p className="truncate px-2 py-1.5 text-xs text-ink/50">{email}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                onProfile();
+              }}
+              className="mt-1 w-full rounded-lg px-2 py-1.5 text-left text-sm font-semibold text-ink/80 transition hover:bg-ink/5"
+            >
+              Profile
+            </button>
             <button
               type="button"
               onClick={() => {

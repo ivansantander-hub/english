@@ -2,6 +2,15 @@
 
 All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the footer) shows a bilingual, learner-facing version of these same entries.
 
+## [1.2.0] - 2026-08-12
+
+### Added
+
+- **Profile page** (opened from the account menu): an on-demand, AI-generated analysis of your practice history. Aggregates per-concept accuracy/priority, a breakdown of recent error types, which topics you skip, and a sample of recent real errors — sends only that summary to the model, never raw answers — and asks for a structured, bilingual result: 1-3 strengths, 2-3 focus areas each with a *why* grounded in your real numbers and a concrete *how*, plus a short summary.
+- Every analysis is saved with a timestamp, not overwritten — the Profile page shows the full history, newest first.
+- If no AI provider is configured or the AI call fails, falls back to a deterministic analysis (your lowest-accuracy concepts, plainly stated, no narrative) so you always get something back — same philosophy as exercise grading's rule-based fallback. Marked `gradedBy: "rules"` so it's distinguishable in the data from a real AI analysis.
+- New `analysis` request type in the `LLMRequest` audit log, same cost/latency/failure tracking as evaluation and conversation calls.
+
 ## [1.1.3] - 2026-08-12
 
 ### Fixed

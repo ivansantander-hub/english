@@ -12,6 +12,7 @@ import { DailyPracticePage } from "./features/practice/DailyPracticePage.js";
 import type { PracticeParams } from "./features/practice/practice-params.js";
 import { PracticeMapPage } from "./features/practice/PracticeMapPage.js";
 import { PracticePage } from "./features/practice/PracticePage.js";
+import { ProfilePage } from "./features/profile/ProfilePage.js";
 import { ReleaseNotesPage } from "./features/release-notes/ReleaseNotesPage.js";
 
 export function App(): React.JSX.Element {
@@ -73,6 +74,7 @@ export function App(): React.JSX.Element {
       {view === "release-notes" && (
         <ReleaseNotesPage key="release-notes" onBack={() => handleNavigate("practice")} />
       )}
+      {view === "profile" && <ProfilePage key="profile" />}
     </AppShell>
   );
 }

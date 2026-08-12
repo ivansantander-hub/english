@@ -51,6 +51,7 @@ enum LLMRequestType {
   generation
   explanation
   conversation
+  analysis
 }
 
 enum ConversationRole {
@@ -90,6 +91,7 @@ model User {
   learningSessions LearningSession[]
   conversations    Conversation[]
   llmRequests      LLMRequest[]
+  profileAnalyses  ProfileAnalysis[]
 }
 
 /// Long-lived login session — a random opaque token, not a JWT, so it can
@@ -289,4 +291,42 @@ model LLMRequest {
 
   @@index([requestType, createdAt])
   @@index([userId, createdAt])
+}
+
+/// One on-demand AI (or deterministic-fallback) analysis of a user's
+/// practice history — kept as history, not overwritten, so past runs stay
+/// visible on the Profile page.
+model ProfileAnalysis {
+  id          String   @id @default(cuid())
+  userId      String
+  createdAt   DateTime @default(now())
+
+  /// "ai" for a real model-generated analysis, "rules" for the
+  /// deterministic fallback (lowest-accuracy concepts, no narrative).
+  gradedBy    GradedBy
+
+  summary     String
+  summaryEs   String
+  strengths   String[]
+  strengthsEs String[]
+
+  user       User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  focusAreas ProfileAnalysisFocusArea[]
+
+  @@index([userId, createdAt])
+}
+
+model ProfileAnalysisFocusArea {
+  id         String @id @default(cuid())
+  analysisId String
+  order      Int
+  concept    String
+  why        String
+  whyEs      String
+  howTo      String
+  howToEs    String
+
+  analysis ProfileAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
 }
