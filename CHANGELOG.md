@@ -1,6 +1,12 @@
 # Changelog
 
-All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the header) shows a bilingual, learner-facing version of these same entries.
+All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the footer) shows a bilingual, learner-facing version of these same entries.
+
+## [1.1.1] - 2026-08-12
+
+### Changed
+
+- Rebuilt the app shell: the header was cramped (logo, version link, 5 nav tabs, streak, theme toggle, and a bare "Log out" link all fighting for one row). Navigation moved to a fixed bottom tab bar (present at every screen size, not just mobile) with icon + label per destination. The header now holds only the brand (which finally links home), streak, theme toggle, and a proper account menu (avatar → email + Log out). The version link moved to a new footer.
 
 ## [1.1.0] - 2026-08-12
 

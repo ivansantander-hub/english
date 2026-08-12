@@ -30,7 +30,11 @@ Semantic color tokens (`ink`, `paper`, `surface`, `sky`, `berry`, `gold`, `mint`
 
 ### Versioning
 
-One app-wide version (root `package.json`), semantic (`MAJOR.MINOR.PATCH`): patch = fixes, minor = new capability, major = a structural change to how the app works. Every version bump gets an entry in [`CHANGELOG.md`](./CHANGELOG.md) (English, dev-facing) and a matching bilingual entry in `apps/web/src/lib/release-notes.ts`, which drives the in-app release notes page — reachable by tapping the version number in the header. Keep both in sync when shipping a versioned change.
+One app-wide version (root `package.json`), semantic (`MAJOR.MINOR.PATCH`): patch = fixes, minor = new capability, major = a structural change to how the app works. Every version bump gets an entry in [`CHANGELOG.md`](./CHANGELOG.md) (English, dev-facing) and a matching bilingual entry in `apps/web/src/lib/release-notes.ts`, which drives the in-app release notes page — reachable by tapping the version number in the footer. Keep both in sync when shipping a versioned change.
+
+### App shell
+
+`AppShell.tsx` treats the app as a mobile-app-like experience at every screen size, not a responsive website: a thin sticky header holds only the brand (click it to go home), streak, theme toggle, and an account menu (avatar → email + Log out); primary navigation lives in a fixed bottom tab bar (`apps/web/src/components/NavIcons.tsx` has the icon set); a footer below page content holds the version link. In-page "back" links (e.g. exiting a practice session) are separate from this and stay on their own pages.
 
 ## Requirements
 
