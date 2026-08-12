@@ -10,18 +10,22 @@ import { DashboardPage } from "./features/dashboard/DashboardPage.js";
 import { MistakesPage } from "./features/mistakes/MistakesPage.js";
 import { DailyPracticePage } from "./features/practice/DailyPracticePage.js";
 import type { PracticeParams } from "./features/practice/practice-params.js";
+import { PracticeMapPage } from "./features/practice/PracticeMapPage.js";
 import { PracticePage } from "./features/practice/PracticePage.js";
-
-const DEFAULT_PRACTICE_PARAMS: PracticeParams = { mode: "balanced" };
 
 export function App(): React.JSX.Element {
   const { user, isLoading } = useAuth();
   const [view, setView] = useState<View>("practice");
-  const [practiceParams, setPracticeParams] = useState<PracticeParams>(DEFAULT_PRACTICE_PARAMS);
+  const [practiceParams, setPracticeParams] = useState<PracticeParams | null>(null);
 
   function startPractice(params: PracticeParams): void {
     setPracticeParams(params);
     setView("practice");
+  }
+
+  function handleNavigate(next: View): void {
+    if (next === "practice") setPracticeParams(null);
+    setView(next);
   }
 
   if (isLoading) {
@@ -35,14 +39,21 @@ export function App(): React.JSX.Element {
   if (!user) return <LoginPage />;
 
   return (
-    <AppShell view={view} onNavigate={setView}>
+    <AppShell view={view} onNavigate={handleNavigate}>
       {view === "practice" &&
-        (practiceParams.mode === "daily" ? (
-          <DailyPracticePage key="daily" />
+        (practiceParams === null ? (
+          <PracticeMapPage
+            key="map"
+            onStartConcept={(conceptKey) => startPractice({ mode: "balanced", conceptKey })}
+            onStartDaily={() => startPractice({ mode: "daily" })}
+          />
+        ) : practiceParams.mode === "daily" ? (
+          <DailyPracticePage key="daily" onExit={() => setPracticeParams(null)} />
         ) : (
           <PracticePage
             key={`${practiceParams.mode}:${practiceParams.conceptKey ?? ""}`}
             params={practiceParams}
+            onExit={() => setPracticeParams(null)}
           />
         ))}
       {view === "conversation" && <ConversationPage key="conversation" />}

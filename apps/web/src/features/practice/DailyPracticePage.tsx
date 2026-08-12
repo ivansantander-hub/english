@@ -11,37 +11,64 @@ const SLICE_LABELS: Record<string, string> = {
   writing: "Writing",
 };
 
-export function DailyPracticePage(): React.JSX.Element {
+function MapLink({ onExit }: { onExit: (() => void) | undefined }): React.JSX.Element | null {
+  if (!onExit) return null;
+  return (
+    <button type="button" onClick={onExit} className="text-sm font-medium text-ink/60 hover:text-ink">
+      ← Map
+    </button>
+  );
+}
+
+export function DailyPracticePage({ onExit }: { onExit?: () => void }): React.JSX.Element {
   const planQuery = trpc.exercise.getDailyPractice.useQuery();
   const [index, setIndex] = useState(0);
   const [totalXp, setTotalXp] = useState(0);
 
   if (planQuery.isLoading) {
-    return <p className="text-ink/50">Building today&rsquo;s session…</p>;
+    return (
+      <div className="space-y-4">
+        <MapLink onExit={onExit} />
+        <p className="text-ink/50">Building today&rsquo;s session…</p>
+      </div>
+    );
   }
 
   if (planQuery.isError || !planQuery.data) {
-    return <p className="text-red-700">Couldn&rsquo;t build a daily practice session.</p>;
+    return (
+      <div className="space-y-4">
+        <MapLink onExit={onExit} />
+        <p className="text-red-700">Couldn&rsquo;t build a daily practice session.</p>
+      </div>
+    );
   }
 
   const plan = planQuery.data;
 
   if (plan.length === 0) {
-    return <p className="text-ink/50">No exercises available right now.</p>;
+    return (
+      <div className="space-y-4">
+        <MapLink onExit={onExit} />
+        <p className="text-ink/50">No exercises available right now.</p>
+      </div>
+    );
   }
 
   if (index >= plan.length) {
     return (
-      <div className="space-y-3 py-12 text-center">
-        <p className="font-serif text-2xl font-semibold text-ink">Daily practice complete</p>
-        <p className="text-ink/60">
-          You finished {plan.length} exercises. See your Progress tab for updated results.
-        </p>
-        {totalXp > 0 && (
-          <p className="inline-block rounded-full border border-gold bg-gold/10 px-3 py-1 font-mono text-sm font-semibold text-gold">
-            +{totalXp} XP earned
+      <div className="space-y-4">
+        <MapLink onExit={onExit} />
+        <div className="space-y-3 py-12 text-center">
+          <p className="font-serif text-2xl font-semibold text-ink">Daily practice complete</p>
+          <p className="text-ink/60">
+            You finished {plan.length} exercises. See your Progress tab for updated results.
           </p>
-        )}
+          {totalXp > 0 && (
+            <p className="inline-block rounded-full border border-gold bg-gold/10 px-3 py-1 font-mono text-sm font-semibold text-gold">
+              +{totalXp} XP earned
+            </p>
+          )}
+        </div>
       </div>
     );
   }
@@ -51,6 +78,7 @@ export function DailyPracticePage(): React.JSX.Element {
 
   return (
     <div className="space-y-4">
+      <MapLink onExit={onExit} />
       <div className="flex items-center justify-between text-sm text-ink/50">
         <span>
           Exercise {index + 1} of {plan.length}

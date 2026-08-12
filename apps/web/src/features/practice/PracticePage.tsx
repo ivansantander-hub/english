@@ -8,7 +8,13 @@ const MODE_LABELS: Record<string, string> = {
   balanced: "Practice",
 };
 
-export function PracticePage({ params }: { params: PracticeParams }): React.JSX.Element {
+export function PracticePage({
+  params,
+  onExit,
+}: {
+  params: PracticeParams;
+  onExit?: () => void;
+}): React.JSX.Element {
   const utils = trpc.useUtils();
   const exerciseQuery = trpc.exercise.getNext.useQuery({
     mode: params.mode === "daily" ? "balanced" : params.mode,
@@ -21,29 +27,39 @@ export function PracticePage({ params }: { params: PracticeParams }): React.JSX.
     void utils.exercise.getNext.invalidate();
   }
 
-  if (exerciseQuery.isLoading) {
-    return <p className="text-ink/50">Loading exercise…</p>;
-  }
-
-  if (exerciseQuery.isError || !exercise) {
-    return (
-      <p className="text-red-700">
-        Couldn&rsquo;t load an exercise. Make sure the API is running and the database has been
-        seeded.
-      </p>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {(params.mode === "weakness" || params.conceptKey) && (
-        <p className="text-sm font-medium text-indigo-700">
-          {params.conceptKey
-            ? `Targeted practice: ${params.conceptKey.replace(/_/g, " ")}`
-            : MODE_LABELS.weakness}
+      {onExit && (
+        <button
+          type="button"
+          onClick={onExit}
+          className="text-sm font-medium text-ink/60 hover:text-ink"
+        >
+          ← Map
+        </button>
+      )}
+
+      {exerciseQuery.isLoading && <p className="text-ink/50">Loading exercise…</p>}
+
+      {(exerciseQuery.isError || (!exerciseQuery.isLoading && !exercise)) && (
+        <p className="text-red-700">
+          Couldn&rsquo;t load an exercise. Make sure the API is running and the database has been
+          seeded.
         </p>
       )}
-      <ExerciseCard exercise={exercise} onNext={handleNext} />
+
+      {exercise && (
+        <>
+          {(params.mode === "weakness" || params.conceptKey) && (
+            <p className="text-sm font-medium text-indigo-700">
+              {params.conceptKey
+                ? `Targeted practice: ${params.conceptKey.replace(/_/g, " ")}`
+                : MODE_LABELS.weakness}
+            </p>
+          )}
+          <ExerciseCard exercise={exercise} onNext={handleNext} />
+        </>
+      )}
     </div>
   );
 }
