@@ -1,4 +1,4 @@
-import { detectWeaknesses } from "@english-a1/learning";
+import { DAILY_PRACTICE_SIZE, detectWeaknesses } from "@english-a1/learning";
 
 import { protectedProcedure, router } from "../../trpc/trpc.js";
 
@@ -8,9 +8,10 @@ export const progressService = new ProgressService();
 
 export const progressRouter = router({
   getDashboard: protectedProcedure.query(async ({ ctx }) => {
-    const [concepts, exercisesCompleted] = await Promise.all([
+    const [concepts, exercisesCompleted, activitySummary] = await Promise.all([
       progressService.getConceptProgress(ctx.userId),
       progressService.getExercisesCompletedCount(ctx.userId),
+      progressService.getActivitySummary(ctx.userId),
     ]);
     const totalAttempts = concepts.reduce((sum, c) => sum + c.attempts, 0);
     const totalCorrect = concepts.reduce((sum, c) => sum + c.correct, 0);
@@ -18,6 +19,8 @@ export const progressRouter = router({
       concepts,
       exercisesCompleted,
       overallAccuracy: totalAttempts > 0 ? totalCorrect / totalAttempts : 0,
+      dailyGoal: DAILY_PRACTICE_SIZE,
+      ...activitySummary,
     };
   }),
 

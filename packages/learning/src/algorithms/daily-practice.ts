@@ -39,6 +39,12 @@ function dailyPracticeSlices(): DailyPracticeSlice[] {
   ];
 }
 
+/** Total exercises in one daily practice session — also used as the "today's goal" size on the progress dashboard. */
+export const DAILY_PRACTICE_SIZE = dailyPracticeSlices().reduce(
+  (sum, slice) => sum + slice.count,
+  0,
+);
+
 export interface DailyPracticeItem {
   exercise: FilterableExercise;
   slice: DailyPracticeSlice["label"];
