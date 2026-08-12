@@ -18,6 +18,7 @@ describe("EvaluationResultSchema", () => {
               type: "third_person_singular",
               category: "third_person_singular",
               explanation: "With he/she/it, the verb takes -s.",
+              explanationEs: "Con he/she/it, el verbo lleva -s.",
               correctedText: "He works in an office.",
             },
           ],

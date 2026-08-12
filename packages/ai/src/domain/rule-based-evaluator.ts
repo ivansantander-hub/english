@@ -43,6 +43,10 @@ export function evaluateWithRules(rawAnswer: string, expectedAnswer: string): Ev
                 userSentence.length === 0
                   ? "No answer was given for this sentence."
                   : "This doesn't match the expected sentence. Rule-based fallback grading cannot explain why — an AI evaluation is needed for details.",
+              explanationEs:
+                userSentence.length === 0
+                  ? "No se dio una respuesta para esta oración."
+                  : "Esto no coincide con la oración esperada. La corrección automática de respaldo no puede explicar por qué — se necesita una evaluación con IA para más detalles.",
               ...(expectedSentence.length > 0 ? { correctedText: expectedSentence } : {}),
             },
           ],

@@ -6,6 +6,7 @@ export const SentenceErrorSchema = z.object({
   type: ErrorTypeSchema,
   category: z.string().min(1).max(100),
   explanation: z.string().min(1).max(1000),
+  explanationEs: z.string().min(1).max(1000),
   correctedText: z.string().max(1000).optional(),
 });
 

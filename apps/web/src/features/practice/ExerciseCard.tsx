@@ -125,6 +125,7 @@ function ResultPanel({
                   <span className="font-bold capitalize">{error.type.replace(/_/g, " ")}:</span>{" "}
                   {error.explanation}
                 </p>
+                <p className="italic text-ink/55">{error.explanationEs}</p>
                 {error.correctedText && (
                   <p className="mt-0.5 text-ink/60">
                     Correct: <span className="font-semibold text-ink">{error.correctedText}</span>

@@ -60,6 +60,7 @@ export class EvaluationService {
                 type: error.type,
                 category: error.category,
                 explanation: error.explanation,
+                explanationEs: error.explanationEs,
                 correctedText: error.correctedText ?? null,
               })),
             },

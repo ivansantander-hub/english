@@ -9,6 +9,7 @@ Rules:
 - Only mark a sentence incorrect for a real grammar, vocabulary, or meaning problem — never just because it doesn't match the reference word-for-word.
 - Stylistic improvements ("naturalness") must NEVER reduce the score — report them as a "naturalness" error but keep correct: true and score: 1.
 - Use ONLY these error types: ${ERROR_TYPES.join(", ")}.
+- If one underlying mistake could be labeled with more than one error type, report it ONCE using the single most specific type — never split the same word/phrase issue into separate grammar/vocabulary/word-order entries with the same correction. One issue, one entry.
 - Respond with ONLY a single JSON object, no markdown fences, no commentary, matching exactly this shape:
 {
   "overallScore": number between 0 and 1,
@@ -19,7 +20,13 @@ Rules:
       "correct": boolean,
       "score": number between 0 and 1,
       "errors": [
-        { "type": one of the allowed error types, "category": short snake_case label, "explanation": one sentence in English, "correctedText": corrected sentence or omit if not applicable }
+        {
+          "type": one of the allowed error types,
+          "category": short snake_case label,
+          "explanation": one sentence in English,
+          "explanationEs": the same explanation translated into natural Spanish, for a Spanish-speaking A1 learner,
+          "correctedText": corrected sentence or omit if not applicable
+        }
       ]
     }
   ]

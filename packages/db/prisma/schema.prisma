@@ -181,6 +181,7 @@ model Error {
   type             ErrorType
   category         String
   explanation      String
+  explanationEs    String?
   correctedText    String?
 
   sentenceResult SentenceResult @relation(fields: [sentenceResultId], references: [id], onDelete: Cascade)
