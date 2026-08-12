@@ -19,7 +19,7 @@ export function MistakesPage({
   if (mistakes.length === 0) {
     return (
       <div className="space-y-2">
-        <h2 className="font-serif text-xl font-semibold text-ink">Focus areas</h2>
+        <h2 className="font-serif text-xl font-extrabold text-ink">Focus areas</h2>
         <p className="text-ink/60">
           Nothing below 80% accuracy right now — keep practicing and weak spots will show up here.
         </p>
@@ -30,7 +30,7 @@ export function MistakesPage({
   return (
     <div className="space-y-10">
       <section>
-        <h2 className="font-serif text-xl font-semibold text-ink">Focus areas</h2>
+        <h2 className="font-serif text-xl font-extrabold text-ink">Focus areas</h2>
         <p className="mt-1 text-sm text-ink/60">
           Every concept under 80% accuracy, weakest first. Same colors and math as Progress.
         </p>
@@ -39,7 +39,7 @@ export function MistakesPage({
       {groupByTopic(mistakes).map(({ topic, items }) => (
         <section key={topic}>
           <div className="mb-3 flex items-baseline justify-between border-b border-ink/10 pb-1.5">
-            <h3 className="font-serif text-lg font-semibold text-ink">{topicLabel(topic)}</h3>
+            <h3 className="font-serif text-lg font-extrabold text-ink">{topicLabel(topic)}</h3>
             <span className="text-sm tabular-nums text-ink/50">
               {items.length} weak {items.length === 1 ? "spot" : "spots"}
             </span>

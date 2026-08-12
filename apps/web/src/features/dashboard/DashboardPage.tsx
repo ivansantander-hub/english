@@ -1,8 +1,8 @@
 import { useState } from "react";
 
+import { DayPip } from "../../components/DayPip.js";
 import { FlameIcon } from "../../components/FlameIcon.js";
 import { LevelBadge } from "../../components/LevelBadge.js";
-import { StampBadge } from "../../components/StampBadge.js";
 import { computeLevel, computeXp } from "../../lib/gamification.js";
 import { groupByTopic, topicLabel } from "../../lib/mastery.js";
 import { trpc } from "../../lib/trpc.js";
@@ -12,21 +12,11 @@ function weekdayLabel(date: string): string {
   return new Date(`${date}T12:00:00Z`).toLocaleDateString(undefined, { weekday: "narrow" });
 }
 
-function StatBlock({
-  value,
-  label,
-  accent,
-}: {
-  value: React.ReactNode;
-  label: string;
-  accent?: string;
-}): React.JSX.Element {
+function StatBlock({ value, label }: { value: React.ReactNode; label: string }): React.JSX.Element {
   return (
     <div>
-      <p className={`font-serif text-4xl font-semibold tabular-nums ${accent ?? "text-ink"}`}>
-        {value}
-      </p>
-      <p className="mt-1 text-sm text-ink/60">{label}</p>
+      <p className="font-serif text-3xl font-extrabold tabular-nums text-ink">{value}</p>
+      <p className="mt-1 text-sm font-semibold text-ink/55">{label}</p>
     </div>
   );
 }
@@ -66,13 +56,13 @@ export function DashboardPage({
   if (exercisesCompleted === 0) {
     return (
       <div className="space-y-6">
-        <section className="flex items-center gap-4 border-b border-ink/10 pb-6">
+        <section className="flex items-center gap-4 rounded-[22px] bg-coral-tint p-6">
           <LevelBadge level={1} size="lg" />
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-ink/50">
+            <p className="text-xs font-bold uppercase tracking-wide text-ink/50">
               Your journey starts here
             </p>
-            <p className="mt-1 font-serif text-2xl font-semibold text-ink">
+            <p className="mt-1 font-serif text-xl font-extrabold text-ink">
               You haven&rsquo;t completed any exercises yet.
             </p>
             <p className="mt-2 max-w-md text-sm text-ink/60">
@@ -83,7 +73,7 @@ export function DashboardPage({
         <button
           type="button"
           onClick={onDailyPractice}
-          className="rounded bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-ink-light"
+          className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
         >
           Start daily practice
         </button>
@@ -97,74 +87,76 @@ export function DashboardPage({
   const touchedByTopic = new Map(groupByTopic(touchedConcepts).map((g) => [g.topic, g.items]));
 
   return (
-    <div className="space-y-10">
-      <section className="flex items-center gap-4 border-b border-ink/10 pb-6">
-        <LevelBadge level={level.level} size="lg" />
-        <div className="min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wide text-ink/50">
-            Level {level.level}
-          </p>
-          <p className="truncate font-serif text-2xl font-semibold text-ink">{level.title}</p>
-          <div className="mt-2 flex items-center gap-2">
-            <div className="h-1.5 w-40 rounded-full bg-ink/10">
+    <div className="space-y-9">
+      <section className="rounded-[26px] bg-gradient-to-br from-gold-tint to-coral-tint p-6 shadow-md">
+        <div className="flex items-center gap-4">
+          <LevelBadge level={level.level} size="lg" />
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-wide text-ink/50">
+              Level {level.level}
+            </p>
+            <p className="truncate font-serif text-xl font-extrabold text-ink">{level.title}</p>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="h-1.5 w-36 rounded-full bg-white/60">
+                <div
+                  className="h-1.5 rounded-full bg-gold"
+                  style={{ width: `${Math.max(4, level.progress * 100)}%` }}
+                />
+              </div>
+              <span className="font-mono text-xs tabular-nums text-ink/50">
+                {level.xpIntoLevel}/{level.xpForNextLevel} XP
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <FlameIcon className={`h-5 w-5 ${practicedToday ? "text-coral" : "text-ink/30"}`} />
+              <p className="font-serif text-3xl font-extrabold tabular-nums text-ink">
+                {currentStreak}
+              </p>
+            </div>
+            <p className="mt-1 text-sm font-semibold text-ink/55">
+              day{currentStreak === 1 ? "" : "s"} streak
+            </p>
+            {!practicedToday && currentStreak > 0 && (
+              <p className="mt-0.5 text-xs font-bold text-coral">Practice today to keep it</p>
+            )}
+          </div>
+
+          <div>
+            <p className="font-serif text-3xl font-extrabold tabular-nums text-ink">
+              {todayCount}
+              <span className="text-lg text-ink/35">/{dailyGoal}</span>
+            </p>
+            <p className="mt-1 text-sm font-semibold text-ink/55">today&rsquo;s goal</p>
+            <div className="mt-1.5 h-1.5 w-20 rounded-full bg-white/60">
               <div
-                className="h-1.5 rounded-full bg-gold transition-all"
-                style={{ width: `${Math.max(4, level.progress * 100)}%` }}
+                className="h-1.5 rounded-full bg-mint"
+                style={{ width: `${Math.min(100, (todayCount / dailyGoal) * 100)}%` }}
               />
             </div>
-            <span className="font-mono text-xs tabular-nums text-ink/50">
-              {level.xpIntoLevel}/{level.xpForNextLevel} XP
-            </span>
           </div>
+
+          <StatBlock value={exercisesCompleted} label="exercises total" />
+          <StatBlock value={`${Math.round(overallAccuracy * 100)}%`} label="accuracy" />
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4">
-        <div>
-          <div className="flex items-center gap-1.5">
-            <FlameIcon className={`h-6 w-6 ${practicedToday ? "text-stamp" : "text-ink/30"}`} />
-            <p className="font-serif text-4xl font-semibold tabular-nums text-ink">
-              {currentStreak}
-            </p>
-          </div>
-          <p className="mt-1 text-sm text-ink/60">day{currentStreak === 1 ? "" : "s"} streak</p>
-          {!practicedToday && currentStreak > 0 && (
-            <p className="mt-0.5 text-xs text-stamp">Practice today to keep it</p>
-          )}
-        </div>
-
-        <div>
-          <p className="font-serif text-4xl font-semibold tabular-nums text-ink">
-            {todayCount}
-            <span className="text-xl text-ink/30">/{dailyGoal}</span>
-          </p>
-          <p className="mt-1 text-sm text-ink/60">today&rsquo;s goal</p>
-          <div className="mt-1.5 h-1.5 w-20 rounded-full bg-ink/10">
-            <div
-              className="h-1.5 rounded-full bg-teal-600"
-              style={{ width: `${Math.min(100, (todayCount / dailyGoal) * 100)}%` }}
-            />
-          </div>
-        </div>
-
-        <StatBlock value={exercisesCompleted} label="exercises total" />
-        <StatBlock value={`${Math.round(overallAccuracy * 100)}%`} label="accuracy" />
-      </section>
-
-      <p className="-mt-6 max-w-md text-xs text-ink/50">
+      <p className="-mt-5 max-w-md text-xs text-ink/45">
         Accuracy is correct ÷ attempts across every grammar concept you&rsquo;ve practiced —
         one exercise can touch several concepts at once, so it moves faster than the exercise
         count above.
       </p>
 
       <section>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink/50">
-          Last 14 days
-        </p>
+        <p className="mb-2.5 text-xs font-bold uppercase tracking-wide text-ink/50">Last 14 days</p>
         <div className="flex gap-1.5">
           {activity.map((day) => (
             <div key={day.date} className="flex flex-col items-center gap-1">
-              <StampBadge
+              <DayPip
                 seed={day.date}
                 count={day.count}
                 isToday={day.date === today}
@@ -180,7 +172,7 @@ export function DashboardPage({
         <button
           type="button"
           onClick={onDailyPractice}
-          className="rounded bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-ink-light"
+          className="rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5"
         >
           Start daily practice
         </button>
@@ -188,32 +180,30 @@ export function DashboardPage({
           <button
             type="button"
             onClick={onPracticeWeaknesses}
-            className="rounded border border-indigo-700 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-50"
+            className="rounded-xl border-2 border-violet px-4 py-2.5 text-sm font-bold text-violet transition hover:bg-violet-tint"
           >
             Practice my weaknesses
           </button>
         )}
       </section>
 
-      <section className="border-y border-ink/10 py-4">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink/50">
-          Mastery scale
-        </p>
-        <ul className="flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-ink/80">
+      <section className="rounded-2xl bg-ink/[0.03] px-5 py-4">
+        <p className="mb-2 text-xs font-bold uppercase tracking-wide text-ink/50">Mastery scale</p>
+        <ul className="flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-ink/70">
           <li className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 bg-ink/20" aria-hidden="true" />
+            <span className="h-2.5 w-2.5 rounded-full bg-ink/15" aria-hidden="true" />
             Not started
           </li>
           <li className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 bg-amber-600" aria-hidden="true" />
+            <span className="h-2.5 w-2.5 rounded-full bg-coral" aria-hidden="true" />
             Below 80% — needs practice
           </li>
           <li className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 bg-indigo-500" aria-hidden="true" />
+            <span className="h-2.5 w-2.5 rounded-full bg-violet" aria-hidden="true" />
             80–89% — almost there
           </li>
           <li className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 bg-emerald-600" aria-hidden="true" />
+            <span className="h-2.5 w-2.5 rounded-full bg-mint" aria-hidden="true" />
             90%+ — mastered
           </li>
         </ul>
@@ -226,7 +216,7 @@ export function DashboardPage({
           <button
             type="button"
             onClick={() => setShowAllConcepts((v) => !v)}
-            className="font-medium text-indigo-700 hover:text-indigo-900"
+            className="font-bold text-coral hover:text-ink"
           >
             {showAllConcepts
               ? "Hide concepts you haven't started"
@@ -243,7 +233,7 @@ export function DashboardPage({
         return (
           <section key={topic}>
             <div className="mb-3 flex items-baseline justify-between border-b border-ink/10 pb-1.5">
-              <h2 className="font-serif text-lg font-semibold text-ink">{topicLabel(topic)}</h2>
+              <h2 className="font-serif text-lg font-extrabold text-ink">{topicLabel(topic)}</h2>
               <span className="text-sm tabular-nums text-ink/50">
                 {masteredCount}/{allItems.length} mastered
               </span>

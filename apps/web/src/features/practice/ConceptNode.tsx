@@ -1,47 +1,51 @@
-import { STATUS } from "../../lib/mastery.js";
 import type { ConceptProgressItem } from "../../lib/trpc-types.js";
 
-const GLYPH: Record<ConceptProgressItem["priority"], string> = {
-  maintenance: "✓",
-  review: "◐",
-  high: "●",
-  medium: "●",
-  new: "",
+export type StoneState = "done" | "active" | "locked";
+
+const GLYPH: Record<StoneState, string> = { done: "✓", active: "●", locked: "○" };
+const LABEL: Record<StoneState, string> = {
+  done: "Mastered",
+  active: "You're here",
+  locked: "Not started yet",
 };
 
 export function ConceptNode({
   concept,
-  align,
+  state,
+  index,
   onClick,
 }: {
   concept: ConceptProgressItem;
-  align: "start" | "end";
+  state: StoneState;
+  index: number;
   onClick: () => void;
 }): React.JSX.Element {
-  const status = STATUS[concept.priority];
-  const isNew = concept.priority === "new";
+  const rotate = index % 2 === 0 ? "-rotate-3" : "rotate-3";
 
   return (
-    <div className={`flex ${align === "end" ? "justify-end" : "justify-start"}`}>
+    <div className="flex shrink-0 flex-col items-center gap-2.5" style={{ minWidth: "78px" }}>
+      {state === "active" && (
+        <span className="-mb-1 rounded-full bg-ink px-2 py-0.5 text-[10px] font-extrabold text-paper">
+          You&rsquo;re here
+        </span>
+      )}
       <button
         type="button"
         onClick={onClick}
-        title={`${concept.conceptName} — ${status.label}`}
-        className={`flex items-center gap-3 rounded-full py-1 transition hover:bg-ink/5 ${
-          align === "end" ? "flex-row-reverse pl-4 pr-1" : "pl-1 pr-4"
+        title={`${concept.conceptName} — ${LABEL[state]}`}
+        className={`flex h-11 w-11 items-center justify-center rounded-2xl text-base font-extrabold shadow-sm transition hover:scale-105 ${rotate} ${
+          state === "done"
+            ? "bg-mint text-white"
+            : state === "active"
+              ? "border-2 border-dashed border-coral bg-white text-ink"
+              : "bg-white text-ink/30"
         }`}
       >
-        <span
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 text-base font-semibold ${
-            isNew
-              ? "border-dashed border-ink/25 bg-paper text-ink/30"
-              : `border-transparent text-white ${status.bar}`
-          }`}
-        >
-          {GLYPH[concept.priority]}
-        </span>
-        <span className="text-sm font-medium text-ink">{concept.conceptName}</span>
+        {GLYPH[state]}
       </button>
+      <span className="text-center text-xs font-semibold leading-tight text-ink/70">
+        {concept.conceptName}
+      </span>
     </div>
   );
 }

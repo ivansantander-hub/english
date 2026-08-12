@@ -33,7 +33,7 @@ export function AdminPage(): React.JSX.Element {
     <div className="space-y-6">
       <section>
         <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Admin</p>
-        <p className="mt-1 font-serif text-2xl font-semibold text-ink">All users</p>
+        <p className="mt-1 font-serif text-2xl font-extrabold text-ink">All users</p>
         <p className="mt-2 max-w-md text-sm text-ink/60">
           {users.length} account{users.length === 1 ? "" : "s"}. Admins can see everyone&rsquo;s
           activity, promote or demote accounts, and reset a forgotten PIN.
@@ -117,8 +117,8 @@ function UserRow({
       </td>
       <td className="py-2.5 pr-4">
         <span
-          className={`rounded px-1.5 py-0.5 text-xs font-medium ${
-            user.role === "admin" ? "bg-gold/20 text-ink" : "bg-ink/5 text-ink/70"
+          className={`rounded-md px-1.5 py-0.5 text-xs font-bold ${
+            user.role === "admin" ? "bg-gold-tint text-ink" : "bg-ink/5 text-ink/70"
           }`}
         >
           {user.role}
@@ -160,7 +160,7 @@ function UserRow({
               <button
                 type="submit"
                 disabled={resetPin.isPending || newPin.length !== 6}
-                className="rounded bg-ink px-2 py-1 text-xs font-medium text-paper disabled:opacity-40"
+                className="rounded-md bg-coral px-2 py-1 text-xs font-bold text-white disabled:opacity-40"
               >
                 Save
               </button>

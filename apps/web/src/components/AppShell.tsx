@@ -1,15 +1,13 @@
 import { useAuth } from "../features/auth/AuthContext.js";
-import { computeLevel, computeXp } from "../lib/gamification.js";
 import { trpc } from "../lib/trpc.js";
 
 import { FlameIcon } from "./FlameIcon.js";
-import { LevelBadge } from "./LevelBadge.js";
 
 export type View = "practice" | "dashboard" | "mistakes" | "conversation" | "admin";
 
 const NAV_ITEMS: { view: View; label: string }[] = [
   { view: "practice", label: "Practice" },
-  { view: "conversation", label: "Conversation" },
+  { view: "conversation", label: "Talk" },
   { view: "dashboard", label: "Progress" },
   { view: "mistakes", label: "Mistakes" },
 ];
@@ -26,10 +24,6 @@ export function AppShell({
   const { user, logout } = useAuth();
   const dashboard = trpc.progress.getDashboard.useQuery();
 
-  const totalCorrect = dashboard.data?.concepts.reduce((sum, c) => sum + c.correct, 0) ?? 0;
-  const conceptsMastered =
-    dashboard.data?.concepts.filter((c) => c.priority === "maintenance").length ?? 0;
-  const level = computeLevel(computeXp(totalCorrect, conceptsMastered));
   const streak = dashboard.data?.currentStreak ?? 0;
   const practicedToday = dashboard.data?.practicedToday ?? false;
 
@@ -37,43 +31,42 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="sticky top-0 z-10 bg-ink text-paper">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-6 py-3">
-          <div className="flex items-center gap-6">
-            <span className="font-serif text-lg font-semibold tracking-tight">English A1</span>
-            <nav className="hidden gap-1 sm:flex" aria-label="Main navigation">
-              {navItems.map((item) => (
-                <NavPill key={item.view} active={view === item.view} onClick={() => onNavigate(item.view)}>
-                  {item.label}
-                </NavPill>
-              ))}
-            </nav>
+      <header className="sticky top-0 z-10 border-b border-ink/8 bg-paper/90 backdrop-blur">
+        <div className="mx-auto flex max-w-2xl items-center gap-3.5 px-6 py-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-coral font-serif text-sm font-extrabold text-white shadow-sm">
+            A1
           </div>
+          <span className="font-serif text-lg font-extrabold">English Line</span>
 
-          <div className="flex items-center gap-3">
-            <div
-              className="flex items-center gap-1 text-gold"
-              title={
-                practicedToday
-                  ? `${streak} day streak — practiced today`
-                  : `${streak} day streak — practice today to keep it`
-              }
-            >
-              <FlameIcon className={`h-4 w-4 ${practicedToday ? "" : "opacity-40"}`} />
-              <span className="font-mono text-sm font-medium tabular-nums text-paper">{streak}</span>
-            </div>
-            <LevelBadge level={level.level} size="sm" />
-            <button
-              type="button"
-              onClick={() => void logout()}
-              className="text-xs font-medium text-paper/60 transition hover:text-paper"
-            >
-              Log out
-            </button>
+          <nav className="ml-auto hidden gap-0.5 sm:flex" aria-label="Main navigation">
+            {navItems.map((item) => (
+              <NavPill key={item.view} active={view === item.view} onClick={() => onNavigate(item.view)}>
+                {item.label}
+              </NavPill>
+            ))}
+          </nav>
+
+          <div
+            className="ml-auto flex items-center gap-1 sm:ml-3"
+            title={
+              practicedToday
+                ? `${streak} day streak — practiced today`
+                : `${streak} day streak — practice today to keep it`
+            }
+          >
+            <FlameIcon className={`h-4 w-4 ${practicedToday ? "text-coral" : "text-ink/25"}`} />
+            <span className="font-mono text-sm font-semibold tabular-nums text-ink">{streak}</span>
           </div>
+          <button
+            type="button"
+            onClick={() => void logout()}
+            className="text-xs font-semibold text-ink/50 transition hover:text-ink"
+          >
+            Log out
+          </button>
         </div>
 
-        <nav className="flex gap-1 overflow-x-auto px-6 pb-2 sm:hidden" aria-label="Main navigation">
+        <nav className="flex gap-1 overflow-x-auto px-6 pb-3 sm:hidden" aria-label="Main navigation">
           {navItems.map((item) => (
             <NavPill key={item.view} active={view === item.view} onClick={() => onNavigate(item.view)}>
               {item.label}
@@ -82,7 +75,7 @@ export function AppShell({
         </nav>
       </header>
 
-      <main className="mx-auto max-w-2xl px-6 py-10">{children}</main>
+      <main className="mx-auto max-w-2xl px-6 py-8">{children}</main>
     </div>
   );
 }
@@ -101,8 +94,8 @@ function NavPill({
       type="button"
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition ${
-        active ? "bg-gold text-ink" : "text-paper/70 hover:bg-white/10 hover:text-paper"
+      className={`shrink-0 rounded-xl px-3.5 py-2 text-sm font-bold transition ${
+        active ? "bg-coral-tint text-ink" : "text-ink/55 hover:bg-coral-tint/60 hover:text-ink"
       }`}
     >
       {children}

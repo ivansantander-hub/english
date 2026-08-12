@@ -13,7 +13,7 @@ export function LevelBadge({
 }): React.JSX.Element {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full border-2 border-gold bg-ink font-serif font-semibold text-gold ${SIZE_CLASSES[size]}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-gold font-serif font-extrabold text-ink shadow-sm ${SIZE_CLASSES[size]}`}
       aria-label={`Level ${level}`}
     >
       {level}

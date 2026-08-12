@@ -33,9 +33,9 @@ export function PracticePage({
         <button
           type="button"
           onClick={onExit}
-          className="text-sm font-medium text-ink/60 hover:text-ink"
+          className="text-sm font-bold text-ink/60 hover:text-ink"
         >
-          ← Map
+          ← Path
         </button>
       )}
 
@@ -51,7 +51,7 @@ export function PracticePage({
       {exercise && (
         <>
           {(params.mode === "weakness" || params.conceptKey) && (
-            <p className="text-sm font-medium text-indigo-700">
+            <p className="text-sm font-bold text-violet">
               {params.conceptKey
                 ? `Targeted practice: ${params.conceptKey.replace(/_/g, " ")}`
                 : MODE_LABELS.weakness}

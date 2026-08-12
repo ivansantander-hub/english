@@ -36,11 +36,11 @@ export function LoginPage(): React.JSX.Element {
   return (
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
       <div className="mb-8 flex items-center gap-3">
-        <div className="flex h-12 w-12 shrink-0 -rotate-6 items-center justify-center rounded-full border-2 border-stamp text-stamp">
-          <span className="font-serif text-sm font-bold tracking-wide">A1</span>
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-coral text-white shadow-sm">
+          <span className="font-serif text-sm font-extrabold tracking-wide">A1</span>
         </div>
         <div>
-          <h1 className="font-serif text-2xl font-semibold tracking-tight text-ink">English A1</h1>
+          <h1 className="font-serif text-2xl font-extrabold tracking-tight text-ink">English Line</h1>
           <p className="text-sm text-ink/50">
             {mode === "login" ? "Welcome back — keep the streak going." : "Start your language journey."}
           </p>
@@ -58,7 +58,7 @@ export function LoginPage(): React.JSX.Element {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded border border-ink/15 bg-white px-3 py-2 text-base text-ink shadow-sm focus:border-ink"
+            className="w-full rounded-xl border border-ink/15 bg-white px-3 py-2.5 text-base text-ink shadow-sm focus:border-coral"
             autoComplete="email"
             autoFocus
           />
@@ -77,7 +77,7 @@ export function LoginPage(): React.JSX.Element {
             required
             value={pin}
             onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 6))}
-            className="w-full rounded border border-ink/15 bg-white px-3 py-2 text-base tracking-[0.3em] text-ink shadow-sm focus:border-ink"
+            className="w-full rounded-xl border border-ink/15 bg-white px-3 py-2.5 text-base tracking-[0.3em] text-ink shadow-sm focus:border-coral"
             autoComplete={mode === "login" ? "current-password" : "new-password"}
           />
           {mode === "register" && (
@@ -87,12 +87,12 @@ export function LoginPage(): React.JSX.Element {
           )}
         </div>
 
-        {error && <p className="text-sm text-stamp">{error}</p>}
+        {error && <p className="text-sm font-medium text-coral">{error}</p>}
 
         <button
           type="submit"
           disabled={isSubmitting || pin.length !== 6}
-          className="w-full rounded bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-ink-light disabled:opacity-40"
+          className="w-full rounded-xl bg-coral px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
         >
           {isSubmitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
         </button>

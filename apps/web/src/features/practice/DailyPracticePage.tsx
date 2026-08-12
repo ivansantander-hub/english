@@ -14,8 +14,8 @@ const SLICE_LABELS: Record<string, string> = {
 function MapLink({ onExit }: { onExit: (() => void) | undefined }): React.JSX.Element | null {
   if (!onExit) return null;
   return (
-    <button type="button" onClick={onExit} className="text-sm font-medium text-ink/60 hover:text-ink">
-      ← Map
+    <button type="button" onClick={onExit} className="text-sm font-bold text-ink/60 hover:text-ink">
+      ← Path
     </button>
   );
 }
@@ -59,12 +59,12 @@ export function DailyPracticePage({ onExit }: { onExit?: () => void }): React.JS
       <div className="space-y-4">
         <MapLink onExit={onExit} />
         <div className="space-y-3 py-12 text-center">
-          <p className="font-serif text-2xl font-semibold text-ink">Daily practice complete</p>
+          <p className="font-serif text-2xl font-extrabold text-ink">Daily practice complete</p>
           <p className="text-ink/60">
             You finished {plan.length} exercises. See your Progress tab for updated results.
           </p>
           {totalXp > 0 && (
-            <p className="inline-block rounded-full border border-gold bg-gold/10 px-3 py-1 font-mono text-sm font-semibold text-gold">
+            <p className="inline-block rounded-full bg-gold-tint px-3 py-1 font-mono text-sm font-bold text-ink">
               +{totalXp} XP earned
             </p>
           )}
@@ -83,13 +83,13 @@ export function DailyPracticePage({ onExit }: { onExit?: () => void }): React.JS
         <span>
           Exercise {index + 1} of {plan.length}
         </span>
-        <span className="font-medium text-indigo-700">
+        <span className="font-bold text-violet">
           {SLICE_LABELS[current.slice] ?? current.slice}
         </span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-ink/10">
         <div
-          className="h-1.5 rounded-full bg-gold transition-all"
+          className="h-1.5 rounded-full bg-coral transition-all"
           style={{ width: `${(index / plan.length) * 100}%` }}
         />
       </div>
