@@ -3,9 +3,34 @@
 @tailwind utilities;
 
 body {
-  @apply bg-stone-50 text-stone-900;
+  @apply bg-paper text-ink;
 }
 
 :focus-visible {
-  @apply outline outline-2 outline-offset-2 outline-indigo-600;
+  @apply outline outline-2 outline-offset-2 outline-ink;
+}
+
+@keyframes stamp-thump {
+  0% {
+    transform: scale(1.6) rotate(-8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-4deg);
+    opacity: 1;
+  }
+}
+
+.animate-stamp {
+  animation: stamp-thump 0.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-stamp {
+    animation: none;
+  }
 }

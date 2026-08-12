@@ -14,9 +14,10 @@ const SLICE_LABELS: Record<string, string> = {
 export function DailyPracticePage(): React.JSX.Element {
   const planQuery = trpc.exercise.getDailyPractice.useQuery();
   const [index, setIndex] = useState(0);
+  const [totalXp, setTotalXp] = useState(0);
 
   if (planQuery.isLoading) {
-    return <p className="text-stone-500">Building today&rsquo;s session…</p>;
+    return <p className="text-ink/50">Building today&rsquo;s session…</p>;
   }
 
   if (planQuery.isError || !planQuery.data) {
@@ -26,16 +27,21 @@ export function DailyPracticePage(): React.JSX.Element {
   const plan = planQuery.data;
 
   if (plan.length === 0) {
-    return <p className="text-stone-500">No exercises available right now.</p>;
+    return <p className="text-ink/50">No exercises available right now.</p>;
   }
 
   if (index >= plan.length) {
     return (
-      <div className="space-y-2 py-12 text-center">
-        <p className="font-serif text-2xl font-semibold">Daily practice complete</p>
-        <p className="text-stone-500">
+      <div className="space-y-3 py-12 text-center">
+        <p className="font-serif text-2xl font-semibold text-ink">Daily practice complete</p>
+        <p className="text-ink/60">
           You finished {plan.length} exercises. See your Progress tab for updated results.
         </p>
+        {totalXp > 0 && (
+          <p className="inline-block rounded-full border border-gold bg-gold/10 px-3 py-1 font-mono text-sm font-semibold text-gold">
+            +{totalXp} XP earned
+          </p>
+        )}
       </div>
     );
   }
@@ -45,7 +51,7 @@ export function DailyPracticePage(): React.JSX.Element {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between text-sm text-stone-500">
+      <div className="flex items-center justify-between text-sm text-ink/50">
         <span>
           Exercise {index + 1} of {plan.length}
         </span>
@@ -53,16 +59,19 @@ export function DailyPracticePage(): React.JSX.Element {
           {SLICE_LABELS[current.slice] ?? current.slice}
         </span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-stone-200">
+      <div className="h-1.5 w-full rounded-full bg-ink/10">
         <div
-          className="h-1.5 rounded-full bg-indigo-600 transition-all"
+          className="h-1.5 rounded-full bg-gold transition-all"
           style={{ width: `${(index / plan.length) * 100}%` }}
         />
       </div>
       <ExerciseCard
         key={current.exercise.id}
         exercise={current.exercise}
-        onNext={() => setIndex((i) => i + 1)}
+        onNext={(earnedXp) => {
+          setTotalXp((xp) => xp + earnedXp);
+          setIndex((i) => i + 1);
+        }}
         nextLabel={index + 1 >= plan.length ? "Finish session" : "Next exercise"}
       />
     </div>

@@ -45,12 +45,12 @@ function ConversationList({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-xl font-semibold">Conversation practice</h2>
+        <h2 className="font-serif text-xl font-semibold text-ink">Conversation practice</h2>
         <button
           type="button"
           onClick={handleNew}
           disabled={startConversation.isPending}
-          className="rounded bg-stone-900 px-4 py-2 text-sm font-medium text-stone-50 transition hover:bg-stone-700 disabled:opacity-40"
+          className="rounded bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-ink-light disabled:opacity-40"
         >
           {startConversation.isPending ? "Starting…" : "New conversation"}
         </button>
@@ -58,28 +58,26 @@ function ConversationList({
 
       {error && <p className="text-sm text-red-700">{error}</p>}
 
-      {list.isLoading && <p className="text-stone-500">Loading conversations…</p>}
+      {list.isLoading && <p className="text-ink/50">Loading conversations…</p>}
       {list.isError && <p className="text-red-700">Couldn&rsquo;t load your conversations.</p>}
 
       {list.data && list.data.length === 0 && (
-        <p className="text-stone-500">
+        <p className="text-ink/50">
           No conversations yet. Start one above to practice speaking naturally with a tutor.
         </p>
       )}
 
       {list.data && list.data.length > 0 && (
-        <ul className="divide-y divide-stone-200 border-t border-stone-200">
+        <ul className="divide-y divide-ink/10 border-t border-ink/10">
           {list.data.map((conversation) => (
             <li key={conversation.id}>
               <button
                 type="button"
                 onClick={() => onOpen(conversation.id)}
-                className="flex w-full items-baseline justify-between gap-4 py-3 text-left hover:bg-stone-100"
+                className="flex w-full items-baseline justify-between gap-4 py-3 text-left hover:bg-ink/5"
               >
-                <span className="min-w-0 flex-1 truncate text-stone-900">
-                  {conversation.preview}
-                </span>
-                <span className="shrink-0 text-sm text-stone-500">
+                <span className="min-w-0 flex-1 truncate text-ink">{conversation.preview}</span>
+                <span className="shrink-0 text-sm text-ink/50">
                   {formatDate(conversation.startedAt)} · {conversation.messageCount}{" "}
                   {conversation.messageCount === 1 ? "message" : "messages"}
                 </span>
@@ -89,6 +87,20 @@ function ConversationList({
         </ul>
       )}
     </div>
+  );
+}
+
+function TypingDots(): React.JSX.Element {
+  return (
+    <span className="inline-flex items-center gap-1" aria-label="Tutor is typing">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40"
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
+      ))}
+    </span>
   );
 }
 
@@ -181,12 +193,12 @@ function ChatView({
       <button
         type="button"
         onClick={onBack}
-        className="mb-4 self-start text-sm font-medium text-stone-600 hover:text-stone-900"
+        className="mb-4 self-start text-sm font-medium text-ink/60 hover:text-ink"
       >
         ← All conversations
       </button>
 
-      {historyQuery.isLoading && <p className="text-stone-500">Loading…</p>}
+      {historyQuery.isLoading && <p className="text-ink/50">Loading…</p>}
 
       <div className="flex-1 space-y-4 overflow-y-auto pr-1">
         {messages.map((message) => (
@@ -194,11 +206,12 @@ function ChatView({
             key={message.id}
             className={`max-w-[85%] rounded-lg px-4 py-2.5 text-base leading-relaxed ${
               message.role === "assistant"
-                ? "bg-stone-100 text-stone-900"
-                : "ml-auto bg-indigo-700 text-white"
+                ? "border border-ink/10 bg-white text-ink"
+                : "ml-auto bg-ink text-paper"
             }`}
           >
-            {message.content || (message.role === "assistant" && isStreaming ? "…" : "")}
+            {message.content ||
+              (message.role === "assistant" && isStreaming ? <TypingDots /> : "")}
           </div>
         ))}
       </div>
@@ -207,7 +220,7 @@ function ChatView({
 
       <form
         onSubmit={(event) => void handleSend(event)}
-        className="mt-4 flex gap-2 border-t border-stone-200 pt-4"
+        className="mt-4 flex gap-2 border-t border-ink/10 pt-4"
       >
         <label htmlFor="conversation-input" className="sr-only">
           Your message
@@ -219,13 +232,13 @@ function ChatView({
           onChange={(event) => setInput(event.target.value)}
           disabled={isStreaming}
           placeholder="Type your reply in English…"
-          className="flex-1 rounded border border-stone-300 bg-white px-3 py-2 text-base shadow-sm focus:border-indigo-600"
+          className="flex-1 rounded border border-ink/15 bg-white px-3 py-2 text-base text-ink shadow-sm focus:border-ink"
           autoFocus
         />
         <button
           type="submit"
           disabled={isStreaming || input.trim().length === 0}
-          className="rounded bg-stone-900 px-4 py-2 text-sm font-medium text-stone-50 transition hover:bg-stone-700 disabled:opacity-40"
+          className="rounded bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-ink-light disabled:opacity-40"
         >
           Send
         </button>

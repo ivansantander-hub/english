@@ -23,13 +23,13 @@ export function ConceptRow({
       </div>
 
       {concept.attempts > 0 && (
-        <p className="mb-1 text-xs text-stone-500">
-          <span className="tabular-nums text-stone-700">{concept.correct}</span> correct ·{" "}
-          <span className="tabular-nums text-stone-700">{incorrect}</span> incorrect
+        <p className="mb-1 text-xs text-ink/50">
+          <span className="tabular-nums text-ink/80">{concept.correct}</span> correct ·{" "}
+          <span className="tabular-nums text-ink/80">{incorrect}</span> incorrect
           {target && (
             <>
               {" "}
-              · <span className="tabular-nums text-stone-700">{target.needed}</span> more correct in
+              · <span className="tabular-nums text-ink/80">{target.needed}</span> more correct in
               a row → {target.targetPercent}% ({target.unlockLabel})
             </>
           )}
@@ -37,7 +37,7 @@ export function ConceptRow({
       )}
 
       <div className="flex items-center gap-3">
-        <div className="h-1.5 w-full rounded-full bg-stone-200" role="presentation">
+        <div className="h-1.5 w-full rounded-full bg-ink/10" role="presentation">
           <div className={`h-1.5 rounded-full ${status.bar}`} style={{ width: `${percent}%` }} />
         </div>
         {onPractice && (

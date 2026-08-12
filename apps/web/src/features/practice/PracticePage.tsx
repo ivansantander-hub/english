@@ -22,7 +22,7 @@ export function PracticePage({ params }: { params: PracticeParams }): React.JSX.
   }
 
   if (exerciseQuery.isLoading) {
-    return <p className="text-stone-500">Loading exercise…</p>;
+    return <p className="text-ink/50">Loading exercise…</p>;
   }
 
   if (exerciseQuery.isError || !exercise) {

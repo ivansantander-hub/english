@@ -22,7 +22,7 @@ export function AdminPage(): React.JSX.Element {
   const usersQuery = trpc.admin.listUsers.useQuery();
   const { user: currentUser } = useAuth();
 
-  if (usersQuery.isLoading) return <p className="text-stone-500">Loading users…</p>;
+  if (usersQuery.isLoading) return <p className="text-ink/50">Loading users…</p>;
   if (usersQuery.isError || !usersQuery.data) {
     return <p className="text-red-700">Couldn&rsquo;t load users.</p>;
   }
@@ -32,18 +32,18 @@ export function AdminPage(): React.JSX.Element {
   return (
     <div className="space-y-6">
       <section>
-        <p className="text-xs font-medium uppercase tracking-wide text-stone-500">Admin</p>
-        <p className="mt-1 font-serif text-2xl font-semibold">All users</p>
-        <p className="mt-2 max-w-md text-sm text-stone-500">
+        <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Admin</p>
+        <p className="mt-1 font-serif text-2xl font-semibold text-ink">All users</p>
+        <p className="mt-2 max-w-md text-sm text-ink/60">
           {users.length} account{users.length === 1 ? "" : "s"}. Admins can see everyone&rsquo;s
           activity, promote or demote accounts, and reset a forgotten PIN.
         </p>
       </section>
 
-      <div className="overflow-x-auto border-t border-stone-200">
+      <div className="overflow-x-auto border-t border-ink/10">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-stone-200 text-xs uppercase tracking-wide text-stone-500">
+            <tr className="border-b border-ink/10 text-xs uppercase tracking-wide text-ink/50">
               <th className="py-2 pr-4 font-medium">Email</th>
               <th className="py-2 pr-4 font-medium">Role</th>
               <th className="py-2 pr-4 font-medium">Exercises</th>
@@ -52,7 +52,7 @@ export function AdminPage(): React.JSX.Element {
               <th className="py-2 font-medium">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-100">
+          <tbody className="divide-y divide-ink/10">
             {users.map((user) => (
               <UserRow
                 key={user.id}
@@ -111,14 +111,14 @@ function UserRow({
 
   return (
     <tr>
-      <td className="py-2.5 pr-4 text-stone-900">
+      <td className="py-2.5 pr-4 text-ink">
         {user.email}
-        {isSelf && <span className="ml-1.5 text-xs text-stone-500">(you)</span>}
+        {isSelf && <span className="ml-1.5 text-xs text-ink/50">(you)</span>}
       </td>
       <td className="py-2.5 pr-4">
         <span
           className={`rounded px-1.5 py-0.5 text-xs font-medium ${
-            user.role === "admin" ? "bg-indigo-100 text-indigo-800" : "bg-stone-100 text-stone-700"
+            user.role === "admin" ? "bg-gold/20 text-ink" : "bg-ink/5 text-ink/70"
           }`}
         >
           {user.role}
@@ -128,7 +128,7 @@ function UserRow({
       <td className="py-2.5 pr-4 tabular-nums">
         {user.exercisesCompleted > 0 ? `${Math.round(user.overallAccuracy * 100)}%` : "—"}
       </td>
-      <td className="py-2.5 pr-4 text-stone-500">{formatDate(user.createdAt)}</td>
+      <td className="py-2.5 pr-4 text-ink/50">{formatDate(user.createdAt)}</td>
       <td className="py-2.5">
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -136,7 +136,7 @@ function UserRow({
             onClick={() => void toggleRole()}
             disabled={setRole.isPending || isSelf}
             title={isSelf ? "You can't change your own role." : undefined}
-            className="rounded border border-stone-300 px-2 py-1 text-xs font-medium text-stone-700 transition hover:bg-stone-100 disabled:opacity-40"
+            className="rounded border border-ink/15 px-2 py-1 text-xs font-medium text-ink/70 transition hover:bg-ink/5 disabled:opacity-40"
           >
             {user.role === "admin" ? "Remove admin" : "Make admin"}
           </button>
@@ -155,12 +155,12 @@ function UserRow({
                 value={newPin}
                 onChange={(event) => setNewPin(event.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="New PIN"
-                className="w-24 rounded border border-stone-300 px-2 py-1 text-xs tracking-widest"
+                className="w-24 rounded border border-ink/15 px-2 py-1 text-xs tracking-widest"
               />
               <button
                 type="submit"
                 disabled={resetPin.isPending || newPin.length !== 6}
-                className="rounded bg-stone-900 px-2 py-1 text-xs font-medium text-stone-50 disabled:opacity-40"
+                className="rounded bg-ink px-2 py-1 text-xs font-medium text-paper disabled:opacity-40"
               >
                 Save
               </button>
@@ -170,7 +170,7 @@ function UserRow({
                   setIsResettingPin(false);
                   setNewPin("");
                 }}
-                className="text-xs text-stone-500 hover:text-stone-900"
+                className="text-xs text-ink/50 hover:text-ink"
               >
                 Cancel
               </button>
@@ -179,7 +179,7 @@ function UserRow({
             <button
               type="button"
               onClick={() => setIsResettingPin(true)}
-              className="rounded border border-stone-300 px-2 py-1 text-xs font-medium text-stone-700 transition hover:bg-stone-100"
+              className="rounded border border-ink/15 px-2 py-1 text-xs font-medium text-ink/70 transition hover:bg-ink/5"
             >
               Reset PIN
             </button>

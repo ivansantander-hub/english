@@ -35,16 +35,21 @@ export function LoginPage(): React.JSX.Element {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
-      <h1 className="mb-1 font-serif text-2xl font-semibold tracking-tight">English A1</h1>
-      <p className="mb-8 text-sm text-stone-500">
-        {mode === "login"
-          ? "Log in to continue practicing."
-          : "Create your account to get started."}
-      </p>
+      <div className="mb-8 flex items-center gap-3">
+        <div className="flex h-12 w-12 shrink-0 -rotate-6 items-center justify-center rounded-full border-2 border-stamp text-stamp">
+          <span className="font-serif text-sm font-bold tracking-wide">A1</span>
+        </div>
+        <div>
+          <h1 className="font-serif text-2xl font-semibold tracking-tight text-ink">English A1</h1>
+          <p className="text-sm text-ink/50">
+            {mode === "login" ? "Welcome back — keep the streak going." : "Start your language journey."}
+          </p>
+        </div>
+      </div>
 
       <form onSubmit={(event) => void handleSubmit(event)} className="space-y-4">
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium text-stone-700">
+          <label htmlFor="email" className="mb-1 block text-sm font-medium text-ink/80">
             Email
           </label>
           <input
@@ -53,14 +58,14 @@ export function LoginPage(): React.JSX.Element {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded border border-stone-300 bg-white px-3 py-2 text-base shadow-sm focus:border-indigo-600"
+            className="w-full rounded border border-ink/15 bg-white px-3 py-2 text-base text-ink shadow-sm focus:border-ink"
             autoComplete="email"
             autoFocus
           />
         </div>
 
         <div>
-          <label htmlFor="pin" className="mb-1 block text-sm font-medium text-stone-700">
+          <label htmlFor="pin" className="mb-1 block text-sm font-medium text-ink/80">
             6-digit PIN
           </label>
           <input
@@ -72,22 +77,22 @@ export function LoginPage(): React.JSX.Element {
             required
             value={pin}
             onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 6))}
-            className="w-full rounded border border-stone-300 bg-white px-3 py-2 text-base tracking-[0.3em] shadow-sm focus:border-indigo-600"
+            className="w-full rounded border border-ink/15 bg-white px-3 py-2 text-base tracking-[0.3em] text-ink shadow-sm focus:border-ink"
             autoComplete={mode === "login" ? "current-password" : "new-password"}
           />
           {mode === "register" && (
-            <p className="mt-1 text-xs text-stone-500">
+            <p className="mt-1 text-xs text-ink/50">
               Pick any 6 digits. There&rsquo;s no recovery, so remember it.
             </p>
           )}
         </div>
 
-        {error && <p className="text-sm text-red-700">{error}</p>}
+        {error && <p className="text-sm text-stamp">{error}</p>}
 
         <button
           type="submit"
           disabled={isSubmitting || pin.length !== 6}
-          className="w-full rounded bg-stone-900 px-4 py-2 text-sm font-medium text-stone-50 transition hover:bg-stone-700 disabled:opacity-40"
+          className="w-full rounded bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-ink-light disabled:opacity-40"
         >
           {isSubmitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
         </button>
@@ -99,7 +104,7 @@ export function LoginPage(): React.JSX.Element {
           setMode(mode === "login" ? "register" : "login");
           setError(null);
         }}
-        className="mt-6 text-sm font-medium text-stone-600 hover:text-stone-900"
+        className="mt-6 text-sm font-medium text-ink/60 hover:text-ink"
       >
         {mode === "login" ? "New here? Create an account" : "Already have an account? Log in"}
       </button>

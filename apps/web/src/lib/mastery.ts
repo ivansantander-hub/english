@@ -5,7 +5,7 @@ import type { ConceptProgressItem } from "./trpc-types.js";
 export type Priority = ConceptProgressItem["priority"];
 
 export const STATUS: Record<Priority, { label: string; text: string; bar: string; dot: string }> = {
-  new: { label: "Not started", text: "text-stone-500", bar: "bg-stone-300", dot: "bg-stone-300" },
+  new: { label: "Not started", text: "text-ink/50", bar: "bg-ink/20", dot: "bg-ink/20" },
   high: {
     label: "Needs practice",
     text: "text-amber-700",
