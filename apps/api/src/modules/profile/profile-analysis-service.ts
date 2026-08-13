@@ -20,8 +20,12 @@ export interface ProfileAnalysisServiceConfig {
   providerName: string;
 }
 
+export type TopicType = "concept" | "error_type";
+
 export interface ProfileAnalysisFocusAreaDTO {
   concept: string;
+  topicType: TopicType;
+  topicKey: string;
   why: string;
   whyEs: string;
   howTo: string;
@@ -119,6 +123,7 @@ export class ProfileAnalysisService {
         currentStreak: activitySummary.currentStreak,
       },
       concepts: concepts.map((concept) => ({
+        key: concept.conceptKey,
         name: concept.conceptName,
         topic: concept.grammarTopic,
         accuracy: concept.accuracy,
@@ -190,6 +195,8 @@ export class ProfileAnalysisService {
       strengthsEs: ["Mira la lista completa de conceptos en tu Dashboard para el panorama completo."],
       focusAreas: weakest.map((concept) => ({
         concept: concept.conceptName,
+        topicType: "concept" as const,
+        topicKey: concept.conceptKey,
         why: `${Math.round(concept.accuracy * 100)}% accuracy across ${concept.attempts} attempts.`,
         whyEs: `${Math.round(concept.accuracy * 100)}% de precisión en ${concept.attempts} intentos.`,
         howTo: "Practice this concept from the Mistakes page.",
@@ -215,6 +222,8 @@ export class ProfileAnalysisService {
           create: result.focusAreas.map((area, index) => ({
             order: index,
             concept: area.concept,
+            topicType: area.topicType,
+            topicKey: area.topicKey,
             why: area.why,
             whyEs: area.whyEs,
             howTo: area.howTo,
@@ -239,6 +248,8 @@ interface ProfileAnalysisRow {
   strengthsEs: string[];
   focusAreas: {
     concept: string;
+    topicType: string;
+    topicKey: string;
     why: string;
     whyEs: string;
     howTo: string;
@@ -257,6 +268,8 @@ function toDTO(row: ProfileAnalysisRow): ProfileAnalysisDTO {
     strengthsEs: row.strengthsEs,
     focusAreas: row.focusAreas.map((area) => ({
       concept: area.concept,
+      topicType: area.topicType as TopicType,
+      topicKey: area.topicKey,
       why: area.why,
       whyEs: area.whyEs,
       howTo: area.howTo,

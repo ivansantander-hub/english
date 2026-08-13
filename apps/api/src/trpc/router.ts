@@ -5,6 +5,7 @@ import { evaluationRouter } from "../modules/evaluation/router.js";
 import { exerciseRouter } from "../modules/exercises/router.js";
 import { profileRouter } from "../modules/profile/router.js";
 import { progressRouter } from "../modules/progress/router.js";
+import { videosRouter } from "../modules/videos/router.js";
 
 import { router } from "./trpc.js";
 
@@ -16,6 +17,7 @@ export const appRouter = router({
   progress: progressRouter,
   conversation: conversationRouter,
   profile: profileRouter,
+  videos: videosRouter,
 });
 
 export type AppRouter = typeof appRouter;

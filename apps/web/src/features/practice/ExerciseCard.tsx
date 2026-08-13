@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import type { Exercise, SubmitAnswerResult } from "../../lib/trpc-types.js";
 import { trpc } from "../../lib/trpc.js";
+import { RecommendedVideoCard } from "../videos/RecommendedVideoCard.js";
 
 const XP_PER_CORRECT = 10;
 
@@ -119,6 +120,10 @@ function ResultPanel({
   const percent = Math.round(result.overallScore * 100);
   const correctCount = result.sentences.filter((s) => s.correct).length;
   const earnedXp = correctCount * XP_PER_CORRECT;
+  const preferences = trpc.profile.getPreferences.useQuery().data;
+  const failedErrorTypes = Array.from(
+    new Set(result.sentences.flatMap((s) => s.errors.map((e) => e.type))),
+  );
 
   return (
     <section aria-live="polite" className="space-y-4 border-t border-ink/10 pt-6">
@@ -159,6 +164,19 @@ function ResultPanel({
           </li>
         ))}
       </ul>
+
+      {preferences?.showVideoRecsInPractice && failedErrorTypes.length > 0 && (
+        <div className="space-y-3">
+          {failedErrorTypes.map((errorType) => (
+            <RecommendedVideoCard
+              key={errorType}
+              topicType="error_type"
+              topicKey={errorType}
+              label={`Videos on: ${errorType.replace(/_/g, " ")}`}
+            />
+          ))}
+        </div>
+      )}
 
       <button
         type="button"

@@ -9,3 +9,6 @@ export type ProfileAnalysis = RouterOutputs["profile"]["list"][number];
 export type ModelInfo = RouterOutputs["admin"]["listModels"][number];
 export type AISettings = RouterOutputs["admin"]["getAISettings"];
 export type LLMUsageSummary = RouterOutputs["admin"]["getLLMUsage"];
+export type RecommendedVideo = RouterOutputs["videos"]["getRecommendations"][number];
+export type WatchHistoryEntry = RouterOutputs["videos"]["listHistory"][number];
+export type Preferences = RouterOutputs["profile"]["getPreferences"];

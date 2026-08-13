@@ -84,6 +84,12 @@ model User {
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
 
+  /// Whether to show a recommended video next to a failed exercise's error
+  /// explanation, and in Profile's focus areas, respectively — each
+  /// independently toggleable from Profile settings.
+  showVideoRecsInPractice Boolean @default(true)
+  showVideoRecsInProfile  Boolean @default(true)
+
   sessions         Session[]
   attempts         ExerciseAttempt[]
   skips            ExerciseSkip[]
@@ -92,6 +98,7 @@ model User {
   conversations    Conversation[]
   llmRequests      LLMRequest[]
   profileAnalyses  ProfileAnalysis[]
+  videoWatchEvents VideoWatchEvent[]
 }
 
 /// Long-lived login session — a random opaque token, not a JWT, so it can
@@ -337,12 +344,58 @@ model ProfileAnalysisFocusArea {
   analysisId String
   order      Int
   concept    String
-  why        String
-  whyEs      String
-  howTo      String
-  howToEs    String
+
+  /// "concept" | "error_type" — which lookup space topicKey belongs to, so
+  /// a recommended video can be looked up reliably (concept/error_type is
+  /// a controlled, stable key; `concept` above is just the display text).
+  topicType String
+  topicKey  String
+
+  why     String
+  whyEs   String
+  howTo   String
+  howToEs String
 
   analysis ProfileAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
 
   @@index([analysisId])
+}
+
+/// A YouTube video recommended for a topic (a Concept.key or an ErrorType
+/// value) — cached and shared across every user, since a topic's best
+/// lesson doesn't depend on who's asking. Refreshed lazily when the cache
+/// is empty or stale; see VideoRecommendationService.
+model RecommendedVideo {
+  id           String   @id @default(cuid())
+  topicType    String
+  topicKey     String
+  videoId      String
+  title        String
+  channelName  String
+  thumbnailUrl String
+  fetchedAt    DateTime @default(now())
+
+  watchEvents VideoWatchEvent[]
+
+  @@unique([topicType, topicKey, videoId])
+  @@index([topicType, topicKey])
+}
+
+/// One row per (user, video), upserted with the highest watched-seconds
+/// seen so far — re-watching a portion doesn't inflate the number, but
+/// watching further does. Powers the watch-history list on Profile.
+model VideoWatchEvent {
+  id                 String   @id @default(cuid())
+  userId             String
+  recommendedVideoId String
+  watchedSeconds     Int      @default(0)
+  completed          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video RecommendedVideo @relation(fields: [recommendedVideoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recommendedVideoId])
+  @@index([userId, createdAt])
 }

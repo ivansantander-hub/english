@@ -2,6 +2,16 @@
 
 All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the footer) shows a bilingual, learner-facing version of these same entries.
 
+## [1.4.0] - 2026-08-12
+
+### Added
+
+- **Real YouTube video recommendations, tied to your actual mistakes**: when a practice answer has an error, or when a Profile analysis flags a focus area, you now get real English-lesson videos to watch about exactly that topic — right there, embedded, without leaving the app. Sourced live from the YouTube Data API (never invented links), preferring established teaching channels (BBC Learning English, English with Lucy, JenniferESL, EnglishClass101, VOA Learning English, lingoni ENGLISH) when relevant, but not limited to them. Results are cached per topic for 30 days so the same lesson isn't re-fetched constantly.
+- Watch time is tracked precisely via the YouTube player itself (polled every 5s while playing) and saved per video — Profile now has a Watch history section showing what you watched, for how long, and whether you finished it.
+- Two independent toggles in Profile → Settings let you turn these recommendations off in Practice and/or in Profile separately.
+- Requires a `YOUTUBE_API_KEY` to actually fetch videos (see README) — without one, the app behaves exactly as before, nothing breaks.
+- The AI's Profile analysis now returns a stable `topicKey` alongside each focus area's display name, so recommendations can be looked up reliably instead of guessing from free text.
+
 ## [1.3.0] - 2026-08-12
 
 ### Added

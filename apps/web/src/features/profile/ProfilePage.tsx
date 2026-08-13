@@ -1,8 +1,9 @@
 import { LevelBadge } from "../../components/LevelBadge.js";
 import { computeLevel, computeXp } from "../../lib/gamification.js";
-import type { ProfileAnalysis } from "../../lib/trpc-types.js";
+import type { Preferences, ProfileAnalysis, WatchHistoryEntry } from "../../lib/trpc-types.js";
 import { trpc } from "../../lib/trpc.js";
 import { useAuth } from "../auth/AuthContext.js";
+import { RecommendedVideoCard } from "../videos/RecommendedVideoCard.js";
 
 const GRADED_BY_LABEL: Record<ProfileAnalysis["gradedBy"], string> = {
   ai: "AI analysis",
@@ -18,9 +19,14 @@ export function ProfilePage(): React.JSX.Element {
   const { user } = useAuth();
   const dashboard = trpc.progress.getDashboard.useQuery();
   const analysesQuery = trpc.profile.list.useQuery();
+  const preferencesQuery = trpc.profile.getPreferences.useQuery();
+  const historyQuery = trpc.videos.listHistory.useQuery();
   const utils = trpc.useUtils();
   const generate = trpc.profile.generate.useMutation({
     onSuccess: () => void utils.profile.list.invalidate(),
+  });
+  const updatePreferences = trpc.profile.updatePreferences.useMutation({
+    onSuccess: (data) => utils.profile.getPreferences.setData(undefined, data),
   });
 
   const totalCorrect = dashboard.data?.concepts.reduce((sum, c) => sum + c.correct, 0) ?? 0;
@@ -67,14 +73,113 @@ export function ProfilePage(): React.JSX.Element {
           </p>
         )}
         {analysesQuery.data?.map((analysis) => (
-          <AnalysisCard key={analysis.id} analysis={analysis} />
+          <AnalysisCard
+            key={analysis.id}
+            analysis={analysis}
+            showVideos={preferencesQuery.data?.showVideoRecsInProfile ?? false}
+          />
         ))}
       </section>
+
+      {historyQuery.data && historyQuery.data.length > 0 && (
+        <section>
+          <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Watch history</p>
+          <ul className="mt-3 space-y-2">
+            {historyQuery.data.map((entry) => (
+              <WatchHistoryRow key={entry.id} entry={entry} />
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {preferencesQuery.data && (
+        <SettingsSection
+          preferences={preferencesQuery.data}
+          onChange={(next) => updatePreferences.mutate(next)}
+        />
+      )}
     </div>
   );
 }
 
-function AnalysisCard({ analysis }: { analysis: ProfileAnalysis }): React.JSX.Element {
+function SettingsSection({
+  preferences,
+  onChange,
+}: {
+  preferences: Preferences;
+  onChange: (next: Preferences) => void;
+}): React.JSX.Element {
+  return (
+    <section className="space-y-3 rounded-2xl bg-surface p-5 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Settings</p>
+      <ToggleRow
+        label="Show video recommendations while practicing"
+        checked={preferences.showVideoRecsInPractice}
+        onChange={(checked) => onChange({ ...preferences, showVideoRecsInPractice: checked })}
+      />
+      <ToggleRow
+        label="Show video recommendations in my analysis"
+        checked={preferences.showVideoRecsInProfile}
+        onChange={(checked) => onChange({ ...preferences, showVideoRecsInProfile: checked })}
+      />
+    </section>
+  );
+}
+
+function ToggleRow({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}): React.JSX.Element {
+  return (
+    <label className="flex items-center justify-between gap-4">
+      <span className="text-sm text-ink/80">{label}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={`relative h-6 w-11 flex-shrink-0 rounded-full transition ${
+          checked ? "bg-sky" : "bg-ink/15"
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${
+            checked ? "left-5" : "left-0.5"
+          }`}
+        />
+      </button>
+    </label>
+  );
+}
+
+function WatchHistoryRow({ entry }: { entry: WatchHistoryEntry }): React.JSX.Element {
+  const minutes = Math.floor(entry.watchedSeconds / 60);
+  const seconds = entry.watchedSeconds % 60;
+  return (
+    <li className="flex items-center justify-between gap-3 rounded-xl bg-surface p-3 shadow-sm">
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-ink">{entry.videoTitle}</p>
+        <p className="truncate text-xs text-ink/55">{entry.channelName}</p>
+      </div>
+      <span className="flex-shrink-0 text-xs font-medium text-ink/60">
+        {entry.completed ? "Completed" : `${minutes}m ${seconds}s`}
+      </span>
+    </li>
+  );
+}
+
+function AnalysisCard({
+  analysis,
+  showVideos,
+}: {
+  analysis: ProfileAnalysis;
+  showVideos: boolean;
+}): React.JSX.Element {
   return (
     <div className="space-y-4 rounded-2xl bg-surface p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -111,6 +216,11 @@ function AnalysisCard({ analysis }: { analysis: ProfileAnalysis }): React.JSX.El
                 <p className="text-sm italic text-ink/55">{area.whyEs}</p>
                 <p className="mt-1.5 text-sm font-medium text-ink/80">{area.howTo}</p>
                 <p className="text-sm italic text-ink/55">{area.howToEs}</p>
+                {showVideos && (
+                  <div className="mt-3">
+                    <RecommendedVideoCard topicType={area.topicType} topicKey={area.topicKey} />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

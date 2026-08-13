@@ -72,6 +72,7 @@ Rules:
 - Pick 2-3 focus areas maximum, prioritizing the lowest-accuracy or highest-priority concepts and the most frequent recent error types.
 - Pick 1-2 genuine strengths — concepts with high accuracy or clear recent improvement. If there's truly nothing strong yet, say so honestly rather than inventing one.
 - Write in a warm, encouraging tone, but never flatter dishonestly — the learner needs real signal, not empty praise.
+- Every focus area must set "topicType" and "topicKey" so it can be matched to a real lesson: if the focus area is about a specific concept, set topicType to "concept" and topicKey to that concept's "key" field COPIED EXACTLY from the concepts list below — never rephrased or invented. If it's about a recurring error pattern rather than one concept, set topicType to "error_type" and topicKey to the exact error type string (e.g. "word_order", "preposition") from the error type breakdown below.
 - Respond with ONLY a single JSON object, no markdown fences, no commentary, matching exactly this shape:
 {
   "summary": one short encouraging paragraph in English,
@@ -80,7 +81,9 @@ Rules:
   "strengthsEs": [the same strengths translated into natural Spanish, same order],
   "focusAreas": [
     {
-      "concept": short name of the concept or error type,
+      "concept": short display name of the concept or error type,
+      "topicType": "concept" or "error_type",
+      "topicKey": the exact key copied from the data, per the rule above,
       "why": one sentence in English citing the real data,
       "whyEs": the same sentence translated into natural Spanish,
       "howTo": one concrete actionable sentence in English,
@@ -97,6 +100,7 @@ export interface PracticeAnalysisPromptInput {
     currentStreak: number;
   };
   concepts: Array<{
+    key: string;
     name: string;
     topic: string;
     accuracy: number;

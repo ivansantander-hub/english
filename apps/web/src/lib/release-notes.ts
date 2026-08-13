@@ -13,6 +13,25 @@ export interface ReleaseNote {
 /** Newest first. The footer's version link always reads RELEASE_NOTES[0].version. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "1.4.0",
+    date: "2026-08-12",
+    type: "minor",
+    title: "Real video lessons for your real mistakes",
+    titleEs: "Videos de lecciones reales para tus errores reales",
+    notes: [
+      "When you get something wrong in Practice, or when your Profile analysis flags a focus area, you now get real YouTube lesson videos about exactly that topic — watch them right inside the app.",
+      "Videos come from real, established English-teaching channels, never invented links.",
+      "Profile now has a Watch history section showing what you watched and for how long.",
+      "New Settings toggles let you turn video recommendations off in Practice and in Profile, independently.",
+    ],
+    notesEs: [
+      "Cuando te equivocas en Practice, o cuando tu análisis de Profile marca un área a mejorar, ahora recibes videos reales de YouTube sobre ese tema exacto — míralos sin salir de la app.",
+      "Los videos vienen de canales reales y reconocidos de enseñanza de inglés, nunca enlaces inventados.",
+      "Profile ahora tiene una sección de Historial de videos que muestra qué viste y por cuánto tiempo.",
+      "Nuevos interruptores en Settings te permiten desactivar las recomendaciones de video en Practice y en Profile, por separado.",
+    ],
+  },
+  {
     version: "1.3.0",
     date: "2026-08-12",
     type: "minor",

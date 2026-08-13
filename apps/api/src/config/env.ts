@@ -28,6 +28,9 @@ const EnvSchema = z.object({
   EVALUATION_MODEL: optionalString(),
   CONVERSATION_MODEL: optionalString(),
   ANALYSIS_MODEL: optionalString(),
+
+  /** Optional — video recommendations are simply hidden everywhere if unset. */
+  YOUTUBE_API_KEY: optionalString(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

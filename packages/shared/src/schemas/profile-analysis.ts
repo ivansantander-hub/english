@@ -2,6 +2,10 @@ import { z } from "zod";
 
 export const ProfileAnalysisFocusAreaSchema = z.object({
   concept: z.string().min(1).max(120),
+  /** Which lookup space topicKey belongs to — controls how a recommended video is found for this focus area. */
+  topicType: z.enum(["concept", "error_type"]),
+  /** Must be copied exactly from the provided concept keys or error types — never invented or rephrased. */
+  topicKey: z.string().min(1).max(80),
   why: z.string().min(1).max(500),
   whyEs: z.string().min(1).max(500),
   howTo: z.string().min(1).max(500),

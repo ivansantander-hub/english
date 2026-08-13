@@ -42,6 +42,7 @@ One app-wide version (root `package.json`), semantic (`MAJOR.MINOR.PATCH`): patc
 - pnpm 10+ (`corepack enable` if you don't have it)
 - PostgreSQL 14+ (local install or Docker)
 - An [OpenRouter](https://openrouter.ai/keys) API key (optional — the app grades with exact-match rules if you skip this, and automatically falls back to rules if the AI call fails)
+- A [YouTube Data API v3](https://console.cloud.google.com/) key (optional — without it, video recommendations simply don't appear; nothing else is affected). See "How video recommendations work" below for how to get one.
 
 ## Setup
 
@@ -56,6 +57,7 @@ Edit `.env`:
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/english_a1?schema=public"
 OPENROUTER_API_KEY="sk-or-..."          # optional
 LLM_MODEL="meta-llama/llama-3.1-8b-instruct"  # bootstrap default only — see "How AI model selection works"
+YOUTUBE_API_KEY=""                      # optional — see "How video recommendations work"
 ```
 
 ### Database
@@ -120,6 +122,23 @@ The model each AI feature (evaluation, conversation, practice analysis) uses is 
 Cost (`LLMRequest.costUsd`) is computed once, at log time, from that same catalog — never recomputed later, so historical numbers don't drift if OpenRouter reprices a model. All three AI features share one logger (`apps/api/src/lib/llm-usage.ts`) instead of each keeping its own copy. The Admin panel's "AI usage" section surfaces all of this: total spend, a breakdown by feature and by model, and the last 50 requests.
 
 **Known gap**: conversation (Talk) calls stream token-by-token and never obtain a token-usage count from OpenRouter, so their `costUsd` is always `null` — cost tracking is currently accurate for evaluation and practice analysis only.
+
+## How video recommendations work
+
+When a Practice answer has an error, or a Profile analysis flags a focus area, the app can surface real YouTube lesson videos about that exact topic — embedded, playable without leaving the app. This requires a `YOUTUBE_API_KEY`; without one the feature is silently absent, same as `OPENROUTER_API_KEY`.
+
+**Getting a key** (free, takes a couple of minutes):
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com/) and create or select a project.
+2. Search "YouTube Data API v3" in the API library and enable it.
+3. Go to Credentials → Create Credentials → API key. Optionally restrict it to just that API.
+4. Add it to your local `.env` as `YOUTUBE_API_KEY=...`, and to the `api` service's variables in Railway for production.
+
+**How it works**: `VideoRecommendationService.getVideosFor(topicType, topicKey)` (`apps/api/src/modules/videos/video-recommendation-service.ts`) looks up a shared `RecommendedVideo` cache keyed by topic — `topicType` is `"concept"` (keyed by the real `Concept.key`) or `"error_type"` (keyed by an `ErrorType` value). On a cache miss or after 30 days, it calls the real YouTube search API (`youtube-client.ts`) and caches up to 3 results, preferring known English-teaching channels (BBC Learning English, English with Lucy, JenniferESL, EnglishClass101, VOA Learning English, lingoni ENGLISH) without being limited to them. The cache is shared across all users — a topic's best lesson doesn't depend on who's asking — so a real search happens at most once per topic per month, well inside YouTube's free daily quota.
+
+The AI's practice analysis (`profile-analysis-service.ts`) is prompted to return a `topicKey` copied exactly from the concept keys it's given, never invented — this is what makes the lookup reliable instead of guessing from the AI's free-text display name.
+
+Watch time is tracked precisely via the YouTube IFrame Player API (`apps/web/src/components/VideoPlayer.tsx`), polled every 5 seconds while playing, saved as a `VideoWatchEvent` per (user, video) pair using a max-value upsert — rewatching a portion never decreases the recorded time, and `completed` is sticky once true. Two independent toggles (Profile → Settings) let a user turn recommendations off in Practice and/or in Profile.
 
 ## Data model, for analysis
 
