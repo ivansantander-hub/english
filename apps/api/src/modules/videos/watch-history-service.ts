@@ -2,8 +2,13 @@ import { prisma } from "@english-a1/db";
 
 export interface WatchHistoryEntryDTO {
   id: string;
+  recommendedVideoId: string;
+  videoId: string;
+  topicType: string;
+  topicKey: string;
   videoTitle: string;
   channelName: string;
+  thumbnailUrl: string;
   watchedSeconds: number;
   completed: boolean;
   updatedAt: Date;
@@ -38,12 +43,21 @@ export class WatchHistoryService {
       where: { userId },
       orderBy: { updatedAt: "desc" },
       take: HISTORY_LIMIT,
-      include: { video: { select: { title: true, channelName: true } } },
+      include: {
+        video: {
+          select: { videoId: true, topicType: true, topicKey: true, title: true, channelName: true, thumbnailUrl: true },
+        },
+      },
     });
     return rows.map((row) => ({
       id: row.id,
+      recommendedVideoId: row.recommendedVideoId,
+      videoId: row.video.videoId,
+      topicType: row.video.topicType,
+      topicKey: row.video.topicKey,
       videoTitle: row.video.title,
       channelName: row.video.channelName,
+      thumbnailUrl: row.video.thumbnailUrl,
       watchedSeconds: row.watchedSeconds,
       completed: row.completed,
       updatedAt: row.updatedAt,

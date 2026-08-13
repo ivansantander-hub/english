@@ -13,6 +13,25 @@ export interface ReleaseNote {
 /** Newest first. The footer's version link always reads RELEASE_NOTES[0].version. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "1.5.0",
+    date: "2026-08-13",
+    type: "minor",
+    title: "Videos that match your level, and remember where you left off",
+    titleEs: "Videos que hablan tu idioma, y que retoman donde los dejaste",
+    notes: [
+      "If your level is A1 or A2, you now get lessons explained IN SPANISH by real channels (Profesor Diego, Francisco Ochoa, Mr. Salas) instead of only 100%-English videos.",
+      "You can force Spanish or English manually from Profile → Settings, or leave it automatic based on your level.",
+      "A video you already started now resumes from where you left off, not from the beginning.",
+      "Watch history is now split into 'In progress' and 'Completed', and you can play any of them directly from there.",
+    ],
+    notesEs: [
+      "Si tu nivel es A1 o A2, ahora ves lecciones explicadas EN ESPAÑOL por canales reales (Profesor Diego, Francisco Ochoa, Mr. Salas) en vez de solo videos 100% en inglés.",
+      "Puedes forzar español o inglés manualmente desde Profile → Settings, o dejarlo en automático según tu nivel.",
+      "Un video que ya empezaste a ver ahora retoma desde donde lo dejaste, no desde el inicio.",
+      "El historial de videos ahora está dividido en 'En progreso' y 'Completados', y puedes reproducir cualquiera directo desde ahí.",
+    ],
+  },
+  {
     version: "1.4.0",
     date: "2026-08-12",
     type: "minor",

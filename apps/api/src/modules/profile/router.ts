@@ -29,6 +29,7 @@ const preferencesService = new PreferencesService();
 const PreferencesInputSchema = z.object({
   showVideoRecsInPractice: z.boolean(),
   showVideoRecsInProfile: z.boolean(),
+  videoLanguagePreference: z.enum(["auto", "es", "en"]),
 });
 
 export const profileRouter = router({

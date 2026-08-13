@@ -4,6 +4,13 @@ import type { Preferences, ProfileAnalysis, WatchHistoryEntry } from "../../lib/
 import { trpc } from "../../lib/trpc.js";
 import { useAuth } from "../auth/AuthContext.js";
 import { RecommendedVideoCard } from "../videos/RecommendedVideoCard.js";
+import { WatchableVideoRow } from "../videos/WatchableVideoRow.js";
+
+const VIDEO_LANGUAGE_OPTIONS: { value: Preferences["videoLanguagePreference"]; label: string }[] = [
+  { value: "auto", label: "Automático" },
+  { value: "es", label: "Español" },
+  { value: "en", label: "Inglés" },
+];
 
 const GRADED_BY_LABEL: Record<ProfileAnalysis["gradedBy"], string> = {
   ai: "AI analysis",
@@ -82,14 +89,7 @@ export function ProfilePage(): React.JSX.Element {
       </section>
 
       {historyQuery.data && historyQuery.data.length > 0 && (
-        <section>
-          <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Watch history</p>
-          <ul className="mt-3 space-y-2">
-            {historyQuery.data.map((entry) => (
-              <WatchHistoryRow key={entry.id} entry={entry} />
-            ))}
-          </ul>
-        </section>
+        <WatchHistorySection entries={historyQuery.data} />
       )}
 
       {preferencesQuery.data && (
@@ -122,6 +122,25 @@ function SettingsSection({
         checked={preferences.showVideoRecsInProfile}
         onChange={(checked) => onChange({ ...preferences, showVideoRecsInProfile: checked })}
       />
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-sm text-ink/80">Idioma de los videos</span>
+        <div className="flex rounded-lg bg-ink/5 p-0.5">
+          {VIDEO_LANGUAGE_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange({ ...preferences, videoLanguagePreference: option.value })}
+              className={`rounded-md px-2.5 py-1 text-xs font-bold transition ${
+                preferences.videoLanguagePreference === option.value
+                  ? "bg-sky text-white shadow-sm"
+                  : "text-ink/60"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
@@ -157,19 +176,53 @@ function ToggleRow({
   );
 }
 
-function WatchHistoryRow({ entry }: { entry: WatchHistoryEntry }): React.JSX.Element {
-  const minutes = Math.floor(entry.watchedSeconds / 60);
-  const seconds = entry.watchedSeconds % 60;
+function WatchHistorySection({ entries }: { entries: WatchHistoryEntry[] }): React.JSX.Element {
+  const inProgress = entries.filter((entry) => !entry.completed && entry.watchedSeconds > 0);
+  const completed = entries.filter((entry) => entry.completed);
+
   return (
-    <li className="flex items-center justify-between gap-3 rounded-xl bg-surface p-3 shadow-sm">
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-ink">{entry.videoTitle}</p>
-        <p className="truncate text-xs text-ink/55">{entry.channelName}</p>
-      </div>
-      <span className="flex-shrink-0 text-xs font-medium text-ink/60">
-        {entry.completed ? "Completed" : `${minutes}m ${seconds}s`}
-      </span>
-    </li>
+    <section className="space-y-6">
+      {inProgress.length > 0 && (
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-ink/50">En progreso</p>
+          <ul className="mt-3 space-y-2">
+            {inProgress.map((entry) => (
+              <li key={entry.id}>
+                <WatchableVideoRow
+                  recommendedVideoId={entry.recommendedVideoId}
+                  videoId={entry.videoId}
+                  title={entry.videoTitle}
+                  channelName={entry.channelName}
+                  thumbnailUrl={entry.thumbnailUrl}
+                  watchedSeconds={entry.watchedSeconds}
+                  completed={entry.completed}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {completed.length > 0 && (
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-ink/50">Completados</p>
+          <ul className="mt-3 space-y-2">
+            {completed.map((entry) => (
+              <li key={entry.id}>
+                <WatchableVideoRow
+                  recommendedVideoId={entry.recommendedVideoId}
+                  videoId={entry.videoId}
+                  title={entry.videoTitle}
+                  channelName={entry.channelName}
+                  thumbnailUrl={entry.thumbnailUrl}
+                  watchedSeconds={entry.watchedSeconds}
+                  completed={entry.completed}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
   );
 }
 

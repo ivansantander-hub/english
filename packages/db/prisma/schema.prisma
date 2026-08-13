@@ -69,6 +69,20 @@ enum GradedBy {
   rules
 }
 
+/// A resolved, concrete video language — never "auto". Auto-resolution
+/// (from the user's videoLanguagePreference + currentLevel) happens before
+/// this ever reaches the cache or the YouTube search.
+enum VideoLanguage {
+  es
+  en
+}
+
+enum VideoLanguagePreference {
+  auto
+  es
+  en
+}
+
 model User {
   id           String      @id @default(cuid())
   email        String      @unique
@@ -89,6 +103,11 @@ model User {
   /// independently toggleable from Profile settings.
   showVideoRecsInPractice Boolean @default(true)
   showVideoRecsInProfile  Boolean @default(true)
+
+  /// "auto" resolves to es/en from currentLevel (A1/A2 -> es, else en) at
+  /// request time — see apps/api's videos router. Only meaningful once
+  /// explicitly overridden away from "auto" does it pin a language.
+  videoLanguagePreference VideoLanguagePreference @default(auto)
 
   sessions         Session[]
   attempts         ExerciseAttempt[]
@@ -366,19 +385,20 @@ model ProfileAnalysisFocusArea {
 /// lesson doesn't depend on who's asking. Refreshed lazily when the cache
 /// is empty or stale; see VideoRecommendationService.
 model RecommendedVideo {
-  id           String   @id @default(cuid())
+  id           String        @id @default(cuid())
   topicType    String
   topicKey     String
+  language     VideoLanguage
   videoId      String
   title        String
   channelName  String
   thumbnailUrl String
-  fetchedAt    DateTime @default(now())
+  fetchedAt    DateTime      @default(now())
 
   watchEvents VideoWatchEvent[]
 
-  @@unique([topicType, topicKey, videoId])
-  @@index([topicType, topicKey])
+  @@unique([topicType, topicKey, language, videoId])
+  @@index([topicType, topicKey, language])
 }
 
 /// One row per (user, video), upserted with the highest watched-seconds

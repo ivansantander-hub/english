@@ -7,7 +7,7 @@ const MAX_RESULTS = 5;
  * gets a real result even if none of these six covered it). Researched
  * and confirmed as real, established channels, not guessed.
  */
-const TRUSTED_CHANNELS = [
+export const ENGLISH_TRUSTED_CHANNELS = [
   "bbc learning english",
   "english with lucy",
   "jenniferesl",
@@ -15,6 +15,14 @@ const TRUSTED_CHANNELS = [
   "voa learning english",
   "lingoni english",
 ];
+
+/**
+ * Channels that teach English with the explanation itself in Spanish —
+ * for learners whose English isn't yet strong enough to follow an
+ * English-only lesson. Researched and confirmed as real, established
+ * channels, not guessed.
+ */
+export const SPANISH_TRUSTED_CHANNELS = ["profesor diego", "francisco ochoa", "mr. salas"];
 
 export interface YouTubeSearchResult {
   videoId: string;
@@ -34,17 +42,22 @@ interface YouTubeSearchResponse {
   }>;
 }
 
-function isTrustedChannel(channelName: string): boolean {
+function isTrustedChannel(channelName: string, trustedChannels: string[]): boolean {
   const normalized = channelName.trim().toLowerCase();
-  return TRUSTED_CHANNELS.some((trusted) => normalized.includes(trusted));
+  return trustedChannels.some((trusted) => normalized.includes(trusted));
 }
 
 /**
- * Searches YouTube for a query, preferring results from TRUSTED_CHANNELS
+ * Searches YouTube for a query, preferring results from trustedChannels
  * (sorted first) without excluding everything else — a topic with no
  * trusted-channel match still gets the most relevant real result.
  */
-export async function searchYouTube(apiKey: string, query: string): Promise<YouTubeSearchResult[]> {
+export async function searchYouTube(
+  apiKey: string,
+  query: string,
+  trustedChannels: string[],
+  relevanceLanguage: "en" | "es",
+): Promise<YouTubeSearchResult[]> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
 
@@ -54,7 +67,7 @@ export async function searchYouTube(apiKey: string, query: string): Promise<YouT
     url.searchParams.set("type", "video");
     url.searchParams.set("maxResults", String(MAX_RESULTS));
     url.searchParams.set("safeSearch", "strict");
-    url.searchParams.set("relevanceLanguage", "en");
+    url.searchParams.set("relevanceLanguage", relevanceLanguage);
     url.searchParams.set("q", query);
     url.searchParams.set("key", apiKey);
 
@@ -75,7 +88,11 @@ export async function searchYouTube(apiKey: string, query: string): Promise<YouT
           item.snippet?.thumbnails?.medium?.url ?? item.snippet?.thumbnails?.default?.url ?? "",
       }));
 
-    return [...results].sort((a, b) => Number(isTrustedChannel(b.channelName)) - Number(isTrustedChannel(a.channelName)));
+    return [...results].sort(
+      (a, b) =>
+        Number(isTrustedChannel(b.channelName, trustedChannels)) -
+        Number(isTrustedChannel(a.channelName, trustedChannels)),
+    );
   } finally {
     clearTimeout(timeout);
   }

@@ -14,6 +14,7 @@ interface YTNamespace {
     element: HTMLElement,
     options: {
       videoId: string;
+      playerVars?: { start?: number };
       events: {
         onStateChange: (event: YTPlayerEvent) => void;
       };
@@ -57,14 +58,19 @@ function loadYouTubeIframeApi(): Promise<YTNamespace> {
 
 export function VideoPlayer({
   videoId,
+  startAtSeconds = 0,
   onProgress,
 }: {
   videoId: string;
+  startAtSeconds?: number;
   onProgress: (watchedSeconds: number, completed: boolean) => void;
 }): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const onProgressRef = useRef(onProgress);
   onProgressRef.current = onProgress;
+  // Captured once at mount — resuming is a one-time seek, not something that
+  // should re-create the player if the underlying watch progress changes.
+  const startAtRef = useRef(startAtSeconds);
 
   useEffect(() => {
     let player: YTPlayer | undefined;
@@ -75,6 +81,7 @@ export function VideoPlayer({
       if (cancelled || !containerRef.current) return;
       player = new YT.Player(containerRef.current, {
         videoId,
+        playerVars: { start: Math.floor(startAtRef.current) },
         events: {
           onStateChange: (event) => {
             if (event.data === YT.PlayerState.PLAYING) {

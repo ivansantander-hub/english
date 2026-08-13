@@ -2,7 +2,17 @@
 
 All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the footer) shows a bilingual, learner-facing version of these same entries.
 
-## [1.4.0] - 2026-08-12
+## [1.5.0] - 2026-08-13
+
+### Added
+
+- **Video recommendations now match your actual English level**: a beginner (A1/A2) gets lessons explained *in Spanish* by real, established channels (Profesor Diego, Francisco Ochoa, Mr. Salas); a stronger learner gets English-taught lessons from the existing six channels. Resolved automatically from your current level, with a manual override (Automático / Español / Inglés) in Profile → Settings for whenever you want to force one or the other.
+- **Resume where you left off**: reopening a video you'd already started now picks up from your last watched position instead of restarting at 0:00 — everywhere a video appears (Practice, Profile's focus areas, and Watch history).
+- Watch history is now split into **En progreso** and **Completados**, and every row is playable directly from the list, not just a static log.
+
+### Changed
+
+- The video cache is now keyed by language too, so a Spanish-taught and an English-taught lesson for the same topic are cached and served independently.
 
 ### Added
 
