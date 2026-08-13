@@ -285,12 +285,28 @@ model LLMRequest {
   errorMessage     String?
   promptTokens     Int?
   completionTokens Int?
+  /// Computed once at log time from OpenRouter's pricing at that moment —
+  /// never recomputed later, so historical numbers don't drift if pricing
+  /// changes. Null when the pricing lookup itself failed (best-effort).
+  costUsd          Float?
   createdAt        DateTime        @default(now())
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([requestType, createdAt])
   @@index([userId, createdAt])
+}
+
+/// Single-row runtime AI configuration, editable from Admin — overrides the
+/// LLM_MODEL/*_MODEL env vars without a redeploy. Env vars remain the
+/// bootstrap default used only until an admin ever saves a setting here.
+model AISettings {
+  id                String   @id @default("singleton")
+  defaultModel      String
+  evaluationModel   String?
+  conversationModel String?
+  analysisModel     String?
+  updatedAt         DateTime @updatedAt
 }
 
 /// One on-demand AI (or deterministic-fallback) analysis of a user's

@@ -3,7 +3,8 @@ import { z } from "zod";
 /**
  * .env files commonly leave optional vars present-but-blank (`FOO=""`)
  * rather than omitted entirely. Treat that the same as "unset" so `??`
- * fallbacks downstream (e.g. llmModelFor) work as intended.
+ * fallbacks downstream (e.g. AISettingsService's bootstrap defaults) work
+ * as intended.
  */
 const optionalString = () =>
   z
@@ -25,7 +26,6 @@ const EnvSchema = z.object({
 
   LLM_MODEL: z.string().min(1).default("openai/gpt-4o-mini"),
   EVALUATION_MODEL: optionalString(),
-  GENERATION_MODEL: optionalString(),
   CONVERSATION_MODEL: optionalString(),
   ANALYSIS_MODEL: optionalString(),
 });
@@ -47,15 +47,3 @@ function loadEnv(): Env {
  * Everything else imports this validated, typed object instead.
  */
 export const env: Env = loadEnv();
-
-export const llmModelFor = (
-  capability: "evaluation" | "generation" | "conversation" | "analysis",
-): string => {
-  const overrides: Record<typeof capability, string | undefined> = {
-    evaluation: env.EVALUATION_MODEL,
-    generation: env.GENERATION_MODEL,
-    conversation: env.CONVERSATION_MODEL,
-    analysis: env.ANALYSIS_MODEL,
-  };
-  return overrides[capability] ?? env.LLM_MODEL;
-};

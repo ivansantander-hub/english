@@ -1,8 +1,9 @@
 import { AIService, OpenRouterProvider } from "@english-a1/ai";
 import { z } from "zod";
 
-import { env, llmModelFor } from "../../config/env.js";
+import { env } from "../../config/env.js";
 import { protectedProcedure, router } from "../../trpc/trpc.js";
+import { aiSettingsService } from "../admin/ai-settings-service.js";
 
 import { ConversationService } from "./conversation-service.js";
 
@@ -18,7 +19,7 @@ const aiService = env.OPENROUTER_API_KEY
 
 export const conversationService = new ConversationService({
   ...(aiService ? { aiService } : {}),
-  model: llmModelFor("conversation"),
+  aiSettingsService,
   providerName: "openrouter",
 });
 

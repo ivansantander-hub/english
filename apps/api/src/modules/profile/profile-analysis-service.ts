@@ -1,10 +1,12 @@
 import { AIAnalysisFailedError } from "@english-a1/ai";
-import type { AIService, LLMCallMeta, PracticeAnalysisPromptInput } from "@english-a1/ai";
+import type { AIService, PracticeAnalysisPromptInput } from "@english-a1/ai";
 import { prisma } from "@english-a1/db";
 import { aggregateErrors, detectWeaknesses } from "@english-a1/learning";
 import type { ErrorEvent } from "@english-a1/learning";
 import type { ConceptProgress, ProfileAnalysisResult } from "@english-a1/shared";
 
+import { logLLMRequest } from "../../lib/llm-usage.js";
+import type { AISettingsService } from "../admin/ai-settings-service.js";
 import type { ProgressService } from "../progress/progress-service.js";
 
 /** How many recent attempts to sample errors from — recent, not lifetime, is what's actionable. */
@@ -14,7 +16,7 @@ const MAX_FALLBACK_FOCUS_AREAS = 3;
 
 export interface ProfileAnalysisServiceConfig {
   aiService?: AIService;
-  model: string;
+  aiSettingsService: Pick<AISettingsService, "modelFor">;
   providerName: string;
 }
 
@@ -149,16 +151,17 @@ export class ProfileAnalysisService {
     }
 
     try {
+      const model = await this.config.aiSettingsService.modelFor("analysis");
       const outcome = await this.config.aiService.analyzePractice({
         ...promptInput,
-        model: this.config.model,
+        model,
         providerName: this.config.providerName,
       });
-      await this.logLLMRequest(userId, outcome.meta);
+      await logLLMRequest(userId, outcome.meta);
       return { result: outcome.analysis, gradedBy: "ai" };
     } catch (error) {
       if (error instanceof AIAnalysisFailedError) {
-        await this.logLLMRequest(userId, error.meta);
+        await logLLMRequest(userId, error.meta);
         return { result: this.fallbackAnalysis(concepts), gradedBy: "rules" };
       }
       throw error;
@@ -223,22 +226,6 @@ export class ProfileAnalysisService {
     });
 
     return toDTO(row);
-  }
-
-  private async logLLMRequest(userId: string, meta: LLMCallMeta): Promise<void> {
-    await prisma.lLMRequest.create({
-      data: {
-        userId,
-        provider: meta.provider,
-        model: meta.model,
-        requestType: meta.requestType,
-        latencyMs: meta.latencyMs,
-        success: meta.success,
-        errorMessage: meta.errorMessage ?? null,
-        promptTokens: meta.promptTokens ?? null,
-        completionTokens: meta.completionTokens ?? null,
-      },
-    });
   }
 }
 

@@ -3,6 +3,8 @@ import { prisma } from "@english-a1/db";
 import type { ConversationMessage } from "@english-a1/db";
 
 import { NotFoundError } from "../../errors.js";
+import { logLLMRequest } from "../../lib/llm-usage.js";
+import type { AISettingsService } from "../admin/ai-settings-service.js";
 
 export interface ConversationMessageDTO {
   id: string;
@@ -26,7 +28,7 @@ function truncate(text: string, maxLength: number): string {
 
 export interface ConversationServiceConfig {
   aiService?: AIService;
-  model: string;
+  aiSettingsService: Pick<AISettingsService, "modelFor">;
   providerName: string;
 }
 
@@ -117,6 +119,7 @@ export class ConversationService {
       content: message.content,
     }));
 
+    const model = await this.config.aiSettingsService.modelFor("conversation");
     const startedAt = Date.now();
     let fullText = "";
     let success = true;
@@ -125,7 +128,7 @@ export class ConversationService {
     try {
       for await (const delta of this.config.aiService.generateConversationResponse({
         messages: chatMessages,
-        model: this.config.model,
+        model,
       })) {
         fullText += delta;
         yield delta;
@@ -135,7 +138,10 @@ export class ConversationService {
       errorMessage = error instanceof Error ? error.message : String(error);
     }
 
-    await this.logLLMRequest(userId, {
+    await logLLMRequest(userId, {
+      provider: this.config.providerName,
+      model,
+      requestType: "conversation",
       success,
       latencyMs: Date.now() - startedAt,
       ...(errorMessage !== undefined ? { errorMessage } : {}),
@@ -156,26 +162,5 @@ export class ConversationService {
     if (!conversation || conversation.userId !== userId) {
       throw new NotFoundError(`Conversation ${conversationId} not found`);
     }
-  }
-
-  private async logLLMRequest(
-    userId: string,
-    meta: {
-      success: boolean;
-      latencyMs: number;
-      errorMessage?: string;
-    },
-  ): Promise<void> {
-    await prisma.lLMRequest.create({
-      data: {
-        userId,
-        provider: this.config.providerName,
-        model: this.config.model,
-        requestType: "conversation",
-        latencyMs: meta.latencyMs,
-        success: meta.success,
-        errorMessage: meta.errorMessage ?? null,
-      },
-    });
   }
 }

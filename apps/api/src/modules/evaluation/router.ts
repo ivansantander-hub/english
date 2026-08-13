@@ -1,8 +1,9 @@
 import { AIService, OpenRouterProvider } from "@english-a1/ai";
 import { SubmitAnswerInputSchema } from "@english-a1/shared";
 
-import { env, llmModelFor } from "../../config/env.js";
+import { env } from "../../config/env.js";
 import { protectedProcedure, router } from "../../trpc/trpc.js";
+import { aiSettingsService } from "../admin/ai-settings-service.js";
 import { exerciseService } from "../exercises/router.js";
 
 import { EvaluationService } from "./evaluation-service.js";
@@ -25,7 +26,7 @@ if (!aiService) {
 
 const evaluationService = new EvaluationService(exerciseService, {
   ...(aiService ? { aiService } : {}),
-  model: llmModelFor("evaluation"),
+  aiSettingsService,
   providerName: "openrouter",
 });
 

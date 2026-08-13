@@ -2,6 +2,18 @@
 
 All notable changes to English A1 are documented here, following [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH): patch = fixes, minor = new capability, major = a structural change to how the app works. The in-app "What's new" page (tap the version number in the footer) shows a bilingual, learner-facing version of these same entries.
 
+## [1.3.0] - 2026-08-12
+
+### Added
+
+- **AI usage and cost, visible in Admin**: every `LLMRequest` row now gets a real `costUsd`, computed at log time from OpenRouter's live per-model pricing (never recomputed later, so historical numbers don't drift if pricing changes). The Admin panel shows total cost, request count, success rate, and a breakdown by feature and by model, plus the last 50 requests (who, what feature, which model, tokens, cost, latency, success/failure) — everything already being logged, finally visible.
+- **Real model control from Admin, not just an env var**: a new `AISettings` row (default model + optional per-feature overrides for evaluation/Talk/Profile analysis) is editable from the Admin panel and takes effect immediately — no redeploy. The picker is populated from OpenRouter's real model catalog, sorted cheapest-first with live pricing shown per option, so a bad choice is visible before saving. `LLM_MODEL`/`EVALUATION_MODEL`/`CONVERSATION_MODEL`/`ANALYSIS_MODEL` env vars still work as the bootstrap default until the first time an admin saves a setting.
+- A bad model choice degrades the same way an OpenRouter outage already does — evaluation falls back to rule-based grading, Profile analysis falls back to its deterministic summary. No new failure mode.
+
+### Changed
+
+- The three AI-backed features (evaluation, conversation, practice analysis) now share one audit-logging function instead of three near-identical copies.
+
 ## [1.2.0] - 2026-08-12
 
 ### Added

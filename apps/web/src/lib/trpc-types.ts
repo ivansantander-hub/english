@@ -6,3 +6,6 @@ export type Exercise = RouterOutputs["exercise"]["getById"];
 export type SubmitAnswerResult = RouterOutputs["evaluation"]["submitAnswer"];
 export type ConceptProgressItem = RouterOutputs["progress"]["getDashboard"]["concepts"][number];
 export type ProfileAnalysis = RouterOutputs["profile"]["list"][number];
+export type ModelInfo = RouterOutputs["admin"]["listModels"][number];
+export type AISettings = RouterOutputs["admin"]["getAISettings"];
+export type LLMUsageSummary = RouterOutputs["admin"]["getLLMUsage"];

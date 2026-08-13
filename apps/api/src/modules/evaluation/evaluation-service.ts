@@ -1,9 +1,11 @@
 import { AIEvaluationFailedError, evaluateWithRules } from "@english-a1/ai";
-import type { AIService, LLMCallMeta } from "@english-a1/ai";
+import type { AIService } from "@english-a1/ai";
 import { prisma } from "@english-a1/db";
 import type { EvaluationResult } from "@english-a1/shared";
 
 import { ValidationError } from "../../errors.js";
+import { logLLMRequest } from "../../lib/llm-usage.js";
+import type { AISettingsService } from "../admin/ai-settings-service.js";
 import type { ExerciseService } from "../exercises/exercise-service.js";
 
 export interface SubmitAnswerResult extends EvaluationResult {
@@ -14,7 +16,7 @@ export interface SubmitAnswerResult extends EvaluationResult {
 
 export interface EvaluationServiceConfig {
   aiService?: AIService;
-  model: string;
+  aiSettingsService: Pick<AISettingsService, "modelFor">;
   providerName: string;
 }
 
@@ -98,16 +100,17 @@ export class EvaluationService {
     }
 
     try {
+      const model = await this.config.aiSettingsService.modelFor("evaluation");
       const outcome = await this.config.aiService.evaluateAnswer({
         ...input,
-        model: this.config.model,
+        model,
         providerName: this.config.providerName,
       });
-      await this.logLLMRequest(userId, outcome.meta);
+      await logLLMRequest(userId, outcome.meta);
       return { evaluation: outcome.evaluation, gradedBy: "ai" };
     } catch (error) {
       if (error instanceof AIEvaluationFailedError) {
-        await this.logLLMRequest(userId, error.meta);
+        await logLLMRequest(userId, error.meta);
         return {
           evaluation: evaluateWithRules(input.rawAnswer, input.referenceAnswer),
           gradedBy: "rules",
@@ -115,22 +118,6 @@ export class EvaluationService {
       }
       throw error;
     }
-  }
-
-  private async logLLMRequest(userId: string, meta: LLMCallMeta): Promise<void> {
-    await prisma.lLMRequest.create({
-      data: {
-        userId,
-        provider: meta.provider,
-        model: meta.model,
-        requestType: meta.requestType,
-        latencyMs: meta.latencyMs,
-        success: meta.success,
-        errorMessage: meta.errorMessage ?? null,
-        promptTokens: meta.promptTokens ?? null,
-        completionTokens: meta.completionTokens ?? null,
-      },
-    });
   }
 
   /**

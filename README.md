@@ -18,7 +18,7 @@ packages/
   exercise/   Pure domain: exercise filtering, sentence splitting, seed exercise/concept content
 ```
 
-The domain (`learning`, `exercise`) has zero dependency on React, Prisma, or OpenRouter — it's plain data in, plain data out, so it's unit-tested without a database or network call. `apps/api` is the composition root that wires everything together and exposes it over tRPC, organized into modules: `auth`, `exercises`, `evaluation`, `progress`, `conversation`, `admin`.
+The domain (`learning`, `exercise`) has zero dependency on React, Prisma, or OpenRouter — it's plain data in, plain data out, so it's unit-tested without a database or network call. `apps/api` is the composition root that wires everything together and exposes it over tRPC, organized into modules: `auth`, `exercises`, `evaluation`, `progress`, `conversation`, `profile`, `admin`.
 
 ### Auth
 
@@ -55,7 +55,7 @@ Edit `.env`:
 ```
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/english_a1?schema=public"
 OPENROUTER_API_KEY="sk-or-..."          # optional
-LLM_MODEL="meta-llama/llama-3.1-8b-instruct"  # cheap default, override freely
+LLM_MODEL="meta-llama/llama-3.1-8b-instruct"  # bootstrap default only — see "How AI model selection works"
 ```
 
 ### Database
@@ -112,6 +112,14 @@ Open http://localhost:5173 and register an account (or log in as the seeded admi
 ## How practice analysis works
 
 On-demand (Profile page, "Analyze my practice"), not automatic. `ProfileAnalysisService.generateAnalysis` aggregates per-concept accuracy/priority (reusing `getConceptProgress`), a type-level breakdown of recent errors (`aggregateErrors` from `packages/learning`, collapsed from type+category to type), which topics get skipped, and a sample of ~15 recent real errors with their explanations — never raw answers — into one JSON payload sent to the model. Same discipline as evaluation: structured output validated against a Zod schema, one retry with a stricter instruction, and a deterministic fallback (lowest-accuracy concepts via `detectWeaknesses`, no narrative) if no provider is configured or the AI call fails, so there's always a result. Every run is persisted (`ProfileAnalysis` + `ProfileAnalysisFocusArea`), never overwritten, so the Profile page shows full history.
+
+## How AI model selection and cost tracking works
+
+The model each AI feature (evaluation, conversation, practice analysis) uses is **not** fixed at deploy time. `LLM_MODEL`/`EVALUATION_MODEL`/`CONVERSATION_MODEL`/`ANALYSIS_MODEL` env vars are only the bootstrap default, read once if no `AISettings` row exists yet. From then on, `AISettingsService` (`apps/api/src/modules/admin/ai-settings-service.ts`) is the source of truth — editable from the Admin panel, takes effect on the very next AI call, no redeploy. The Admin picker is populated from OpenRouter's real model catalog (`packages/ai/src/services/model-catalog.ts`, cached in memory for an hour, bounded by a 5s timeout so a slow catalog fetch never blocks a real request), filtered to models that accept text input and return text-only output, sorted cheapest-first with live per-model pricing shown.
+
+Cost (`LLMRequest.costUsd`) is computed once, at log time, from that same catalog — never recomputed later, so historical numbers don't drift if OpenRouter reprices a model. All three AI features share one logger (`apps/api/src/lib/llm-usage.ts`) instead of each keeping its own copy. The Admin panel's "AI usage" section surfaces all of this: total spend, a breakdown by feature and by model, and the last 50 requests.
+
+**Known gap**: conversation (Talk) calls stream token-by-token and never obtain a token-usage count from OpenRouter, so their `costUsd` is always `null` — cost tracking is currently accurate for evaluation and practice analysis only.
 
 ## Data model, for analysis
 

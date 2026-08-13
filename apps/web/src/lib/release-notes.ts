@@ -13,6 +13,23 @@ export interface ReleaseNote {
 /** Newest first. The footer's version link always reads RELEASE_NOTES[0].version. */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "1.3.0",
+    date: "2026-08-12",
+    type: "minor",
+    title: "AI cost and model control in Admin",
+    titleEs: "Costo de IA y control del modelo en Admin",
+    notes: [
+      "Admin now shows exactly what every AI call costs — total spend, a breakdown by feature and model, and every recent request.",
+      "You can change which model each AI feature uses right from Admin — no more editing an env var and redeploying.",
+      "The model picker shows real prices from OpenRouter, sorted cheapest first.",
+    ],
+    notesEs: [
+      "Admin ahora muestra exactamente cuánto cuesta cada llamada a la IA — gasto total, desglose por función y por modelo, y cada solicitud reciente.",
+      "Puedes cambiar qué modelo usa cada función de IA directamente desde Admin — ya no hay que editar una variable de entorno y redesplegar.",
+      "El selector de modelo muestra precios reales de OpenRouter, ordenados del más barato al más caro.",
+    ],
+  },
+  {
     version: "1.2.0",
     date: "2026-08-12",
     type: "minor",

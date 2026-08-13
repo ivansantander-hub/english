@@ -42,7 +42,7 @@ describe("EvaluationService (integration)", () => {
   const evaluationService = new EvaluationService(
     new ExerciseService(new PrismaExerciseRepository(), progressService),
     {
-      model: "test-model",
+      aiSettingsService: { modelFor: () => Promise.resolve("test-model") },
       providerName: "test-provider",
     },
   );
@@ -141,7 +141,7 @@ describe("EvaluationService (integration)", () => {
             usage: { promptTokens: 12, completionTokens: 5 },
           }),
         ),
-        model: "test-model",
+        aiSettingsService: { modelFor: () => Promise.resolve("test-model") },
         providerName: "test-provider",
       },
     );
@@ -166,7 +166,7 @@ describe("EvaluationService (integration)", () => {
       new ExerciseService(new PrismaExerciseRepository(), progressService),
       {
         aiService: new AIService(new ScriptedProvider(new Error("simulated provider outage"))),
-        model: "test-model-down",
+        aiSettingsService: { modelFor: () => Promise.resolve("test-model-down") },
         providerName: "test-provider",
       },
     );

@@ -1,7 +1,8 @@
 import { AIService, OpenRouterProvider } from "@english-a1/ai";
 
-import { env, llmModelFor } from "../../config/env.js";
+import { env } from "../../config/env.js";
 import { protectedProcedure, router } from "../../trpc/trpc.js";
+import { aiSettingsService } from "../admin/ai-settings-service.js";
 import { progressService } from "../progress/router.js";
 
 import { ProfileAnalysisService } from "./profile-analysis-service.js";
@@ -18,7 +19,7 @@ const aiService = env.OPENROUTER_API_KEY
 
 const profileAnalysisService = new ProfileAnalysisService(progressService, {
   ...(aiService ? { aiService } : {}),
-  model: llmModelFor("analysis"),
+  aiSettingsService,
   providerName: "openrouter",
 });
 
