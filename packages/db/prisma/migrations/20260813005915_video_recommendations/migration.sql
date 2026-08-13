@@ -1,13 +1,19 @@
-/*
-  Warnings:
-
-  - Added the required column `topicKey` to the `ProfileAnalysisFocusArea` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `topicType` to the `ProfileAnalysisFocusArea` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- AlterTable
-ALTER TABLE "ProfileAnalysisFocusArea" ADD COLUMN     "topicKey" TEXT NOT NULL,
-ADD COLUMN     "topicType" TEXT NOT NULL;
+-- topicType/topicKey are added nullable first because production already has
+-- ProfileAnalysisFocusArea rows from earlier releases (dev's empty table hid
+-- this). Existing rows are backfilled with a best-effort slug so they still
+-- resolve to *something* (or safely no match, which the video lookup already
+-- handles) before the columns are locked to NOT NULL.
+ALTER TABLE "ProfileAnalysisFocusArea" ADD COLUMN     "topicKey" TEXT,
+ADD COLUMN     "topicType" TEXT;
+
+UPDATE "ProfileAnalysisFocusArea"
+SET "topicType" = 'concept',
+    "topicKey" = lower(regexp_replace(regexp_replace(trim("concept"), '[^a-zA-Z0-9]+', '_', 'g'), '^_+|_+$', '', 'g'))
+WHERE "topicKey" IS NULL;
+
+ALTER TABLE "ProfileAnalysisFocusArea" ALTER COLUMN "topicKey" SET NOT NULL,
+ALTER COLUMN "topicType" SET NOT NULL;
 
 -- AlterTable
 ALTER TABLE "User" ADD COLUMN     "showVideoRecsInPractice" BOOLEAN NOT NULL DEFAULT true,
